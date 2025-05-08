@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { formatTime, parseTimeInput } from "@/lib/utils";
-import { StepBack, StepForward, Play, Clock } from "lucide-react";
+import { StepBack, StepForward, Play, ChevronDown, ChevronUp, Scissors } from "lucide-react";
 
 interface ClipControlsProps {
   videoDuration: number;
@@ -38,7 +38,9 @@ export default function ClipControls({
   const [endTimeDisplay, setEndTimeDisplay] = useState(formatTime(endTime || videoDuration));
   const [isDraggingStart, setIsDraggingStart] = useState(false);
   const [isDraggingEnd, setIsDraggingEnd] = useState(false);
-  const [advancedOptionsOpen, setAdvancedOptionsOpen] = useState(true);
+  const [advancedOptionsOpen, setAdvancedOptionsOpen] = useState(false);
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [touchElement, setTouchElement] = useState<'start' | 'end' | null>(null);
 
   // Update display times when props change
   useEffect(() => {
@@ -89,11 +91,12 @@ export default function ClipControls({
   // Generate time indicators for the timeline
   const timeIndicators = [];
   if (videoDuration) {
-    const step = Math.ceil(videoDuration / 5);
+    const numIndicators = window.innerWidth < 640 ? 3 : 5;
+    const step = Math.ceil(videoDuration / (numIndicators - 1));
     for (let i = 0; i <= videoDuration; i += step) {
       if (i <= videoDuration) {
         timeIndicators.push(
-          <span key={i} className="text-xs text-gray-500">
+          <span key={i} className="text-xs text-gray-500 whitespace-nowrap">
             {formatTime(i)}
           </span>
         );
@@ -101,84 +104,109 @@ export default function ClipControls({
     }
   }
 
+  const handleTouchStart = (element: 'start' | 'end', e: React.TouchEvent) => {
+    setTouchStartX(e.touches[0].clientX);
+    setTouchElement(element);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (touchStartX === null || !touchElement || !videoDuration) return;
+    
+    const container = e.currentTarget.parentElement;
+    if (!container) return;
+    
+    const rect = container.getBoundingClientRect();
+    const position = (e.touches[0].clientX - rect.left) / rect.width;
+    
+    if (touchElement === 'start') {
+      const newTime = Math.max(0, Math.min(position * videoDuration, endTime - 1));
+      onStartTimeChange(newTime);
+    } else {
+      const newTime = Math.min(videoDuration, Math.max(startTime + 1, position * videoDuration));
+      onEndTimeChange(newTime);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setTouchStartX(null);
+    setTouchElement(null);
+  };
+
   return (
-    <>
-      <Card className="bg-white rounded-lg shadow-sm p-6 mb-6">
-        <CardContent className="p-0">
-          <h3 className="text-lg font-semibold mb-4">Clip Selection</h3>
+    <div className="space-y-4">
+      <Card className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+        <CardContent className="p-4 md:p-6">
+          <h3 className="text-base font-medium text-gray-800 mb-4">Adjust clip timing</h3>
           
           {/* Timeline with visual markers */}
-          <div className="mb-6">
-            <div className="relative pt-6 pb-2">
-              {/* Timeline Track */}
-              <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                {/* Selected Area */}
-                <div 
-                  className="absolute h-2 bg-blue-500 rounded-full" 
-                  style={{ 
-                    left: `${startPosition}%`, 
-                    right: `${100 - endPosition}%` 
-                  }}
-                ></div>
-                
-                {/* Start Marker */}
-                <div 
-                  className="absolute w-4 h-4 bg-blue-600 rounded-full -mt-1 border-2 border-white shadow cursor-grab active:cursor-grabbing"
-                  style={{ 
-                    left: `${startPosition}%`, 
-                    transform: 'translateX(-50%)' 
-                  }}
-                  onMouseDown={() => setIsDraggingStart(true)}
-                  onMouseUp={() => setIsDraggingStart(false)}
-                  onMouseLeave={() => setIsDraggingStart(false)}
-                  onMouseMove={(e) => {
-                    if (isDraggingStart && videoDuration) {
-                      const container = e.currentTarget.parentElement;
-                      if (container) {
-                        const rect = container.getBoundingClientRect();
-                        const position = (e.clientX - rect.left) / rect.width;
-                        const newTime = Math.max(0, Math.min(position * videoDuration, endTime - 1));
-                        onStartTimeChange(newTime);
-                      }
-                    }
-                  }}
-                ></div>
-                
-                {/* End Marker */}
-                <div 
-                  className="absolute w-4 h-4 bg-blue-600 rounded-full -mt-1 border-2 border-white shadow cursor-grab active:cursor-grabbing"
-                  style={{ 
-                    left: `${endPosition}%`, 
-                    transform: 'translateX(-50%)' 
-                  }}
-                  onMouseDown={() => setIsDraggingEnd(true)}
-                  onMouseUp={() => setIsDraggingEnd(false)}
-                  onMouseLeave={() => setIsDraggingEnd(false)}
-                  onMouseMove={(e) => {
-                    if (isDraggingEnd && videoDuration) {
-                      const container = e.currentTarget.parentElement;
-                      if (container) {
-                        const rect = container.getBoundingClientRect();
-                        const position = (e.clientX - rect.left) / rect.width;
-                        const newTime = Math.min(videoDuration, Math.max(startTime + 1, position * videoDuration));
-                        onEndTimeChange(newTime);
-                      }
-                    }
-                  }}
-                ></div>
-              </div>
+          <div className="timeline-container mb-6">
+            <div className="timeline-track">
+              {/* Selected Area */}
+              <div 
+                className="absolute h-2 bg-primary rounded-full" 
+                style={{ 
+                  left: `${startPosition}%`, 
+                  right: `${100 - endPosition}%` 
+                }}
+              ></div>
               
-              {/* Time Indicators */}
-              <div className="flex justify-between text-xs text-gray-500 mt-2">
-                {timeIndicators}
-              </div>
+              {/* Start Marker */}
+              <div 
+                className="timeline-marker"
+                style={{ left: `${startPosition}%` }}
+                onMouseDown={() => setIsDraggingStart(true)}
+                onMouseUp={() => setIsDraggingStart(false)}
+                onMouseLeave={() => setIsDraggingStart(false)}
+                onTouchStart={(e) => handleTouchStart('start', e)}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+                onMouseMove={(e) => {
+                  if (isDraggingStart && videoDuration) {
+                    const container = e.currentTarget.parentElement;
+                    if (container) {
+                      const rect = container.getBoundingClientRect();
+                      const position = (e.clientX - rect.left) / rect.width;
+                      const newTime = Math.max(0, Math.min(position * videoDuration, endTime - 1));
+                      onStartTimeChange(newTime);
+                    }
+                  }
+                }}
+              ></div>
+              
+              {/* End Marker */}
+              <div 
+                className="timeline-marker"
+                style={{ left: `${endPosition}%` }}
+                onMouseDown={() => setIsDraggingEnd(true)}
+                onMouseUp={() => setIsDraggingEnd(false)}
+                onMouseLeave={() => setIsDraggingEnd(false)}
+                onTouchStart={(e) => handleTouchStart('end', e)}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+                onMouseMove={(e) => {
+                  if (isDraggingEnd && videoDuration) {
+                    const container = e.currentTarget.parentElement;
+                    if (container) {
+                      const rect = container.getBoundingClientRect();
+                      const position = (e.clientX - rect.left) / rect.width;
+                      const newTime = Math.min(videoDuration, Math.max(startTime + 1, position * videoDuration));
+                      onEndTimeChange(newTime);
+                    }
+                  }
+                }}
+              ></div>
+            </div>
+            
+            {/* Time Indicators */}
+            <div className="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-gray-500">
+              {timeIndicators}
             </div>
           </div>
           
           {/* Precise Time Controls */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
             <div>
-              <Label htmlFor="start-time" className="block text-sm font-medium text-gray-700 mb-1">
+              <Label htmlFor="start-time" className="block text-sm font-medium text-gray-700 mb-1.5 control-label">
                 Start Time
               </Label>
               <div className="flex rounded-md shadow-sm">
@@ -187,22 +215,22 @@ export default function ClipControls({
                   value={startTimeDisplay}
                   onChange={handleStartTimeInputChange}
                   onBlur={handleStartTimeInputBlur}
-                  className="flex-1 rounded-r-none"
+                  className="flex-1 rounded-r-none border-r-0"
                   placeholder="0:00"
                 />
                 <Button 
                   type="button"
                   variant="outline"
-                  className="rounded-l-none border-l-0"
+                  className="rounded-l-none"
                   onClick={() => onStartTimeChange(0)}
                 >
-                  <Clock className="h-4 w-4" />
+                  <Scissors className="h-3.5 w-3.5" />
                 </Button>
               </div>
             </div>
             
             <div>
-              <Label htmlFor="end-time" className="block text-sm font-medium text-gray-700 mb-1">
+              <Label htmlFor="end-time" className="block text-sm font-medium text-gray-700 mb-1.5 control-label">
                 End Time
               </Label>
               <div className="flex rounded-md shadow-sm">
@@ -211,77 +239,63 @@ export default function ClipControls({
                   value={endTimeDisplay}
                   onChange={handleEndTimeInputChange}
                   onBlur={handleEndTimeInputBlur}
-                  className="flex-1 rounded-r-none"
+                  className="flex-1 rounded-r-none border-r-0"
                   placeholder="0:00"
                 />
                 <Button 
                   type="button"
                   variant="outline"
-                  className="rounded-l-none border-l-0"
+                  className="rounded-l-none"
                   onClick={() => onEndTimeChange(videoDuration)}
                 >
-                  <Clock className="h-4 w-4" />
+                  <Scissors className="h-3.5 w-3.5" />
                 </Button>
               </div>
             </div>
           </div>
           
-          {/* Clip Navigation */}
-          <div className="flex justify-between items-center">
-            <div className="flex space-x-2">
-              <Button 
-                variant="outline"
-                size="sm"
-                onClick={() => onStartTimeChange(startTime)}
-                className="inline-flex items-center text-gray-700"
-              >
-                <StepBack className="h-4 w-4 mr-1" />
-                Jump to Start
-              </Button>
-              <Button 
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  // This would typically use the player instance to play the clip
-                  // Implementation handled by the parent component
-                }}
-                className="inline-flex items-center text-gray-700"
-              >
-                <Play className="h-4 w-4 mr-1" />
-                Play Clip
-              </Button>
-            </div>
-            
+          {/* Clip Preview Controls */}
+          <div className="flex flex-wrap justify-center sm:justify-between items-center gap-2">
             <Button 
               variant="outline"
               size="sm"
-              onClick={() => onEndTimeChange(endTime)}
-              className="inline-flex items-center text-gray-700"
+              onClick={() => {
+                // This would typically use the player instance to play the clip
+                // Implementation handled by the parent component
+              }}
+              className="flex items-center text-gray-700 px-4"
             >
-              Jump to End
-              <StepForward className="h-4 w-4 ml-1" />
+              <Play className="h-3.5 w-3.5 mr-1.5" />
+              <span className="text-sm">Preview Clip</span>
             </Button>
+            
+            <div className="text-sm text-gray-600 font-medium">
+              Duration: <span className="text-gray-900">{formatTime(endTime - startTime)}</span>
+            </div>
           </div>
         </CardContent>
       </Card>
       
       {/* Advanced Options */}
-      <Card className="bg-white rounded-lg shadow-sm p-6">
-        <CardContent className="p-0">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">Advanced Options</h3>
-            <button 
-              onClick={() => setAdvancedOptionsOpen(!advancedOptionsOpen)}
-              className="text-sm text-gray-500 hover:text-gray-700"
-            >
-              <i className={`fas fa-angle-${advancedOptionsOpen ? 'up' : 'down'}`}></i>
-            </button>
-          </div>
+      <Card className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+        <CardContent className="p-4 md:p-6">
+          <button 
+            onClick={() => setAdvancedOptionsOpen(!advancedOptionsOpen)}
+            className="w-full flex items-center justify-between text-left"
+          >
+            <h3 className="text-base font-medium text-gray-800">Additional Options</h3>
+            <span className="text-gray-500">
+              {advancedOptionsOpen ? 
+                <ChevronUp className="h-5 w-5" /> : 
+                <ChevronDown className="h-5 w-5" />
+              }
+            </span>
+          </button>
           
           {advancedOptionsOpen && (
-            <div className="space-y-4">
+            <div className="space-y-4 mt-4 pt-4 border-t border-gray-100">
               <div>
-                <Label htmlFor="clip-title" className="block text-sm font-medium text-gray-700 mb-1">
+                <Label htmlFor="clip-title" className="block text-sm font-medium text-gray-700 mb-1.5">
                   Clip Title
                 </Label>
                 <Input 
@@ -289,35 +303,37 @@ export default function ClipControls({
                   value={clipTitle}
                   onChange={(e) => onClipTitleChange(e.target.value)}
                   className="w-full"
-                  placeholder="My awesome clip"
+                  placeholder="Add a title to your clip"
                 />
               </div>
               
-              <div className="flex items-center space-x-2">
-                <Checkbox 
-                  id="include-subtitles" 
-                  checked={includeSubtitles}
-                  onCheckedChange={(checked) => onIncludeSubtitlesChange(checked as boolean)}
-                />
-                <Label htmlFor="include-subtitles" className="text-sm text-gray-700">
-                  Include subtitles (if available)
-                </Label>
-              </div>
-              
-              <div className="flex items-center space-x-2">
-                <Checkbox 
-                  id="loop-clip" 
-                  checked={loopClip}
-                  onCheckedChange={(checked) => onLoopClipChange(checked as boolean)}
-                />
-                <Label htmlFor="loop-clip" className="text-sm text-gray-700">
-                  Loop clip in preview
-                </Label>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:gap-6">
+                <div className="flex items-center space-x-2 mb-2 sm:mb-0">
+                  <Checkbox 
+                    id="loop-clip" 
+                    checked={loopClip}
+                    onCheckedChange={(checked) => onLoopClipChange(checked as boolean)}
+                  />
+                  <Label htmlFor="loop-clip" className="text-sm text-gray-700">
+                    Loop clip in preview
+                  </Label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="include-subtitles" 
+                    checked={includeSubtitles}
+                    onCheckedChange={(checked) => onIncludeSubtitlesChange(checked as boolean)}
+                  />
+                  <Label htmlFor="include-subtitles" className="text-sm text-gray-700">
+                    Include subtitles
+                  </Label>
+                </div>
               </div>
             </div>
           )}
         </CardContent>
       </Card>
-    </>
+    </div>
   );
 }

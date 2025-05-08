@@ -105,11 +105,11 @@ export default function Home() {
     <div className="flex flex-col min-h-screen bg-gray-50 text-gray-800">
       <AppHeader />
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow">
+      <main className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-4 sm:py-8 flex-grow">
         <VideoInputForm onSubmit={handleUrlSubmit} />
         
         {videoId && (
-          <>
+          <div className="space-y-6 sm:space-y-8">
             <VideoPlayer 
               videoId={videoId} 
               startTime={startTime}
@@ -119,8 +119,8 @@ export default function Home() {
               onVideoDurationChange={setVideoDuration}
             />
             
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
-              <div className="lg:col-span-2">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+              <div className="md:col-span-2 order-2 md:order-1">
                 <ClipControls 
                   videoDuration={videoDuration}
                   startTime={startTime}
@@ -136,16 +136,18 @@ export default function Home() {
                 />
               </div>
               
-              <ClipInfo 
-                videoTitle={videoTitle}
-                startTime={startTime}
-                endTime={endTime}
-                onCreateClip={handleCreateClip}
-                clipCreated={clipCreated}
-                onCopyLink={handleCopyLink}
-              />
+              <div className="order-1 md:order-2">
+                <ClipInfo 
+                  videoTitle={videoTitle}
+                  startTime={startTime}
+                  endTime={endTime}
+                  onCreateClip={handleCreateClip}
+                  clipCreated={clipCreated}
+                  onCopyLink={handleCopyLink}
+                />
+              </div>
             </div>
-          </>
+          </div>
         )}
       </main>
       

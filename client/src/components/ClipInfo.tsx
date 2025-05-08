@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { formatTime } from "@/lib/utils";
-import { Scissors, Link, Download, Twitter, Facebook, Mail } from "lucide-react";
+import { Scissors, Link, Download, Share2, PlayCircle } from "lucide-react";
 
 interface ClipInfoProps {
   videoTitle: string;
@@ -25,102 +25,99 @@ export default function ClipInfo({
   
   return (
     <div>
-      <Card className="bg-white rounded-lg shadow-sm p-6 mb-6">
+      <Card className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 md:p-6 mb-4">
         <CardContent className="p-0">
-          <h3 className="text-lg font-semibold mb-4">Clip Information</h3>
+          <h3 className="text-base font-medium text-gray-800 mb-4">Video details</h3>
           
           <div className="space-y-4">
             <div>
-              <p className="text-sm text-gray-500 mb-1">Original Video</p>
-              <p className="font-medium line-clamp-2">{videoTitle || "No video selected"}</p>
+              <p className="text-xs text-gray-500 mb-1">Source</p>
+              <p className="font-medium text-sm line-clamp-2">{videoTitle || "No video selected"}</p>
             </div>
             
-            <div>
-              <p className="text-sm text-gray-500 mb-1">Clip Duration</p>
-              <p className="font-medium">{formatTime(clipDuration)}</p>
-            </div>
-            
-            <div className="pt-2">
-              <div className="flex items-center justify-center px-4 py-3 bg-gray-50 border border-gray-200 rounded-md text-sm">
-                <div className="flex items-center">
-                  <i className="fas fa-info-circle text-blue-500 mr-2"></i>
-                  <p className="text-gray-600">Clips remain private until shared</p>
-                </div>
+            <div className="flex flex-row gap-4">
+              <div>
+                <p className="text-xs text-gray-500 mb-1">Start</p>
+                <p className="font-medium text-sm">{formatTime(startTime)}</p>
+              </div>
+              
+              <div>
+                <p className="text-xs text-gray-500 mb-1">End</p>
+                <p className="font-medium text-sm">{formatTime(endTime)}</p>
+              </div>
+              
+              <div>
+                <p className="text-xs text-gray-500 mb-1">Duration</p>
+                <p className="font-medium text-sm">{formatTime(clipDuration)}</p>
               </div>
             </div>
           </div>
         </CardContent>
       </Card>
       
-      <Card className="bg-white rounded-lg shadow-sm p-6">
+      <Card className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 md:p-6">
         <CardContent className="p-0">
-          <h3 className="text-lg font-semibold mb-4">Create & Share</h3>
+          <h3 className="text-base font-medium text-gray-800 mb-4">Share your clip</h3>
           
           <div className="space-y-4">
             <Button 
               onClick={onCreateClip}
-              className="w-full justify-center items-center px-6 py-6 bg-blue-600 hover:bg-blue-700"
+              className="w-full justify-center items-center py-5 bg-primary hover:bg-primary/90 rounded-md"
               disabled={startTime >= endTime || endTime === 0}
             >
               <Scissors className="mr-2 h-4 w-4" />
-              Create Clip
+              Create & Share Clip
             </Button>
             
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center" aria-hidden="true">
-                <div className="w-full border-t border-gray-300"></div>
+            {clipCreated ? (
+              <div className="space-y-4">
+                <div className="bg-gray-50 border border-gray-100 rounded-md p-3 flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <PlayCircle className="h-5 w-5 text-primary" />
+                    <span className="text-sm font-medium">Clip ready to share</span>
+                  </div>
+                  <Button 
+                    variant="outline"
+                    size="sm"
+                    onClick={onCopyLink}
+                    className="text-xs h-8"
+                  >
+                    <Link className="mr-1.5 h-3.5 w-3.5" />
+                    Copy Link
+                  </Button>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-3">
+                  <Button 
+                    variant="outline"
+                    onClick={onCopyLink}
+                    className="justify-center items-center text-sm py-5"
+                  >
+                    <Link className="mr-2 h-4 w-4" />
+                    Copy Link
+                  </Button>
+                  
+                  <Button 
+                    variant="outline"
+                    className="justify-center items-center text-sm py-5"
+                  >
+                    <Share2 className="mr-2 h-4 w-4" />
+                    Share
+                  </Button>
+                </div>
               </div>
-              <div className="relative flex justify-center">
-                <span className="px-2 bg-white text-sm text-gray-500">Share Options</span>
+            ) : (
+              <div className="bg-gray-50 border border-gray-100 rounded-md p-3 flex items-start gap-3">
+                <div className="shrink-0 bg-primary/10 rounded-full p-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-primary">
+                    <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 01.67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 11-.671-1.34l.041-.022zM12 9a.75.75 0 100-1.5.75.75 0 000 1.5z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="text-sm text-gray-600">
+                  <p>Create a clip to generate a shareable link. Clips remain private until shared.</p>
+                </div>
               </div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-3">
-              <Button 
-                variant="outline"
-                onClick={onCopyLink}
-                disabled={!clipCreated}
-                className="justify-center items-center"
-              >
-                <Link className="mr-2 h-4 w-4" />
-                Copy Link
-              </Button>
-              
-              <Button 
-                variant="outline"
-                disabled={!clipCreated}
-                className="justify-center items-center"
-              >
-                <Download className="mr-2 h-4 w-4" />
-                Download
-              </Button>
-            </div>
-            
-            <div className="grid grid-cols-3 gap-2">
-              <Button 
-                variant="outline"
-                disabled={!clipCreated}
-                className="p-2 justify-center"
-              >
-                <Twitter className="h-4 w-4" />
-              </Button>
-              
-              <Button 
-                variant="outline"
-                disabled={!clipCreated}
-                className="p-2 justify-center"
-              >
-                <Facebook className="h-4 w-4" />
-              </Button>
-              
-              <Button 
-                variant="outline"
-                disabled={!clipCreated}
-                className="p-2 justify-center"
-              >
-                <Mail className="h-4 w-4" />
-              </Button>
-            </div>
+            )}
           </div>
         </CardContent>
       </Card>

@@ -1,28 +1,51 @@
-import { Cog, Bookmark, User } from "lucide-react";
+import { Bookmark, User, Scissors } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function AppHeader() {
   return (
     <header className="bg-white shadow-sm sticky top-0 z-10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <h1 className="text-xl font-bold text-primary">ClipCraft</h1>
-            <span className="ml-2 text-xs bg-blue-100 text-blue-800 rounded-full px-2 py-0.5">Beta</span>
+            <div className="flex items-center gap-1.5">
+              <Scissors className="h-5 w-5 text-primary" />
+              <h1 className="text-lg sm:text-xl font-bold text-gray-900">
+                <span className="text-primary">Clip</span>Craft
+              </h1>
+            </div>
+            <span className="ml-2 text-xs bg-primary/10 text-primary rounded-full px-2 py-0.5 hidden sm:inline-block">
+              Beta
+            </span>
           </div>
           
-          <div className="flex space-x-4">
-            <button className="text-gray-600 hover:text-gray-900" title="View Saved Clips">
-              <Bookmark className="h-5 w-5" />
-            </button>
-            <button className="text-gray-600 hover:text-gray-900" title="Settings">
-              <Cog className="h-5 w-5" />
-            </button>
-            <button 
-              className="flex items-center justify-center h-8 w-8 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300" 
-              title="User Account"
+          <div className="flex items-center gap-2 sm:gap-4">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              className="text-gray-600 hover:text-primary hover:bg-primary/5 hidden sm:flex items-center gap-1.5"
+              title="View Saved Clips"
+            >
+              <Bookmark className="h-4 w-4" />
+              <span className="text-sm">My Clips</span>
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-gray-600 hover:text-primary hover:bg-primary/5 sm:hidden"
+              title="View Saved Clips"
+            >
+              <Bookmark className="h-4 w-4" />
+            </Button>
+            
+            <Button 
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-1.5 text-sm bg-white"
             >
               <User className="h-4 w-4" />
-            </button>
+              <span className="hidden sm:inline">Sign in</span>
+            </Button>
           </div>
         </div>
       </div>
