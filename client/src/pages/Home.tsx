@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import AppHeader from "@/components/AppHeader";
 import AppFooter from "@/components/AppFooter";
 import VideoInputForm from "@/components/VideoInputForm";
@@ -6,6 +6,7 @@ import VideoPlayer from "@/components/VideoPlayer";
 import ClipControls from "@/components/ClipControls";
 import ClipInfo from "@/components/ClipInfo";
 import { useToast } from "@/hooks/use-toast";
+import useYouTubePlayer from "@/hooks/useYouTubePlayer";
 
 export default function Home() {
   const { toast } = useToast();
@@ -20,6 +21,12 @@ export default function Home() {
   const [loopClip, setLoopClip] = useState<boolean>(false);
   const [clipCreated, setClipCreated] = useState<boolean>(false);
   const [clipId, setClipId] = useState<string | null>(null);
+  
+  // Reference to video player container
+  const videoPlayerRef = useRef<HTMLDivElement>(null);
+  
+  // YouTube player functions
+  const { seekTo, play } = useYouTubePlayer(videoPlayerRef);
 
   const handleUrlSubmit = (url: string) => {
     // Extract video ID from YouTube URL
@@ -97,6 +104,26 @@ export default function Home() {
       toast({
         title: "Link copied!",
         description: "Clip URL has been copied to clipboard"
+      });
+    }
+  };
+  
+  // Function to preview the clip
+  const handlePreviewClip = () => {
+    if (startTime >= 0 && endTime > startTime) {
+      // Seek to the start time and play
+      seekTo(startTime);
+      play();
+      
+      toast({
+        title: "Previewing clip",
+        description: `Playing clip from ${startTime.toFixed(1)}s to ${endTime.toFixed(1)}s`,
+      });
+    } else {
+      toast({
+        title: "Invalid clip selection",
+        description: "Please select a valid start and end time",
+        variant: "destructive"
       });
     }
   };
