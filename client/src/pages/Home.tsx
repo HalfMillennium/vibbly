@@ -137,14 +137,16 @@ export default function Home() {
         
         {videoId && (
           <div className="space-y-6 sm:space-y-8">
-            <VideoPlayer 
-              videoId={videoId} 
-              startTime={startTime}
-              endTime={endTime}
-              loopClip={loopClip}
-              onVideoTitleChange={setVideoTitle}
-              onVideoDurationChange={setVideoDuration}
-            />
+            <div ref={videoPlayerRef}>
+              <VideoPlayer 
+                videoId={videoId} 
+                startTime={startTime}
+                endTime={endTime}
+                loopClip={loopClip}
+                onVideoTitleChange={setVideoTitle}
+                onVideoDurationChange={setVideoDuration}
+              />
+            </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
               <div className="md:col-span-2 order-2 md:order-1">
@@ -160,6 +162,7 @@ export default function Home() {
                   onIncludeSubtitlesChange={setIncludeSubtitles}
                   loopClip={loopClip}
                   onLoopClipChange={setLoopClip}
+                  onPreviewClip={handlePreviewClip}
                 />
               </div>
               
