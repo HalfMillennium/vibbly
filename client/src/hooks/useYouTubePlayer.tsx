@@ -88,17 +88,8 @@ const useYouTubePlayer = (containerRef: React.RefObject<HTMLDivElement>) => {
 
     if (!containerRef.current) return;
 
-    const playerDiv = document.createElement("div");
-    playerDiv.id = "youtube-player";
-    playerDiv.style.width = "100%";
-    playerDiv.style.height = "100%";
-
-    // Clear the container and add the new player div
-    while (containerRef.current.firstChild) {
-      containerRef.current.removeChild(containerRef.current.firstChild);
-    }
-    containerRef.current.appendChild(playerDiv);
-
+    // We'll use the existing div with id "youtube-player" instead of recreating it
+    // This approach prevents DOM manipulation errors
     playerRef.current = new window.YT.Player("youtube-player", {
       videoId,
       playerVars: {
