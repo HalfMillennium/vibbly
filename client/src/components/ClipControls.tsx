@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -104,33 +104,70 @@ export default function ClipControls({
     }
   }
 
-  const handleTouchStart = (element: 'start' | 'end', e: React.TouchEvent) => {
-    setTouchStartX(e.touches[0].clientX);
+  // Used for both mouse and touch events
+  const handleDragStart = (element: 'start' | 'end', e: React.MouseEvent | React.TouchEvent) => {
+    if ('touches' in e) {
+      setTouchStartX(e.touches[0].clientX);
+    }
+    
+    if (element === 'start') {
+      setIsDraggingStart(true);
+    } else {
+      setIsDraggingEnd(true);
+    }
     setTouchElement(element);
+    
+    // Add global event listeners for better dragging experience
+    document.addEventListener('mousemove', handleGlobalDragMove);
+    document.addEventListener('touchmove', handleGlobalDragMove);
+    document.addEventListener('mouseup', handleGlobalDragEnd);
+    document.addEventListener('touchend', handleGlobalDragEnd);
   };
 
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (touchStartX === null || !touchElement || !videoDuration) return;
+  // Global handlers for smoother dragging experience
+  const handleGlobalDragMove = useCallback((e: MouseEvent | TouchEvent) => {
+    if (!videoDuration) return;
+    if (!isDraggingStart && !isDraggingEnd) return;
     
-    const container = e.currentTarget.parentElement;
-    if (!container) return;
+    const trackElement = document.querySelector('.timeline-track');
+    if (!trackElement) return;
     
-    const rect = container.getBoundingClientRect();
-    const position = (e.touches[0].clientX - rect.left) / rect.width;
+    const rect = trackElement.getBoundingClientRect();
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    let position = (clientX - rect.left) / rect.width;
+    position = Math.max(0, Math.min(1, position)); // Clamp between 0 and 1
     
-    if (touchElement === 'start') {
+    if (isDraggingStart) {
       const newTime = Math.max(0, Math.min(position * videoDuration, endTime - 1));
       onStartTimeChange(newTime);
-    } else {
+    } else if (isDraggingEnd) {
       const newTime = Math.min(videoDuration, Math.max(startTime + 1, position * videoDuration));
       onEndTimeChange(newTime);
     }
-  };
-
-  const handleTouchEnd = () => {
+  }, [isDraggingStart, isDraggingEnd, videoDuration, endTime, startTime, onStartTimeChange, onEndTimeChange]);
+  
+  const handleGlobalDragEnd = useCallback(() => {
+    setIsDraggingStart(false);
+    setIsDraggingEnd(false);
     setTouchStartX(null);
     setTouchElement(null);
-  };
+    
+    // Remove the global event listeners
+    document.removeEventListener('mousemove', handleGlobalDragMove);
+    document.removeEventListener('touchmove', handleGlobalDragMove);
+    document.removeEventListener('mouseup', handleGlobalDragEnd);
+    document.removeEventListener('touchend', handleGlobalDragEnd);
+  }, [handleGlobalDragMove]);
+  
+  // Clean up event listeners when component unmounts
+  useEffect(() => {
+    return () => {
+      document.removeEventListener('mousemove', handleGlobalDragMove);
+      document.removeEventListener('touchmove', handleGlobalDragMove);
+      document.removeEventListener('mouseup', handleGlobalDragEnd);
+      document.removeEventListener('touchend', handleGlobalDragEnd);
+    };
+  }, [handleGlobalDragMove, handleGlobalDragEnd]);
 
   return (
     <div className="space-y-4">
@@ -154,23 +191,8 @@ export default function ClipControls({
               <div 
                 className="timeline-marker"
                 style={{ left: `${startPosition}%` }}
-                onMouseDown={() => setIsDraggingStart(true)}
-                onMouseUp={() => setIsDraggingStart(false)}
-                onMouseLeave={() => setIsDraggingStart(false)}
-                onTouchStart={(e) => handleTouchStart('start', e)}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleTouchEnd}
-                onMouseMove={(e) => {
-                  if (isDraggingStart && videoDuration) {
-                    const container = e.currentTarget.parentElement;
-                    if (container) {
-                      const rect = container.getBoundingClientRect();
-                      const position = (e.clientX - rect.left) / rect.width;
-                      const newTime = Math.max(0, Math.min(position * videoDuration, endTime - 1));
-                      onStartTimeChange(newTime);
-                    }
-                  }
-                }}
+                onMouseDown={(e) => handleDragStart('start', e)}
+                onTouchStart={(e) => handleDragStart('start', e)}
               >
                 {/* Small tooltip showing time */}
                 <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-primary text-white text-xs rounded px-1.5 py-0.5 whitespace-nowrap">
@@ -182,23 +204,8 @@ export default function ClipControls({
               <div 
                 className="timeline-marker"
                 style={{ left: `${endPosition}%` }}
-                onMouseDown={() => setIsDraggingEnd(true)}
-                onMouseUp={() => setIsDraggingEnd(false)}
-                onMouseLeave={() => setIsDraggingEnd(false)}
-                onTouchStart={(e) => handleTouchStart('end', e)}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleTouchEnd}
-                onMouseMove={(e) => {
-                  if (isDraggingEnd && videoDuration) {
-                    const container = e.currentTarget.parentElement;
-                    if (container) {
-                      const rect = container.getBoundingClientRect();
-                      const position = (e.clientX - rect.left) / rect.width;
-                      const newTime = Math.min(videoDuration, Math.max(startTime + 1, position * videoDuration));
-                      onEndTimeChange(newTime);
-                    }
-                  }
-                }}
+                onMouseDown={(e) => handleDragStart('end', e)}
+                onTouchStart={(e) => handleDragStart('end', e)}
               >
                 {/* Small tooltip showing time */}
                 <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-primary text-white text-xs rounded px-1.5 py-0.5 whitespace-nowrap">
