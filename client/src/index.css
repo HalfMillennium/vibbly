@@ -80,9 +80,13 @@
   }
 
   .timeline-marker {
-    @apply absolute w-6 h-6 bg-primary border-2 border-white rounded-full shadow-md cursor-grab active:cursor-grabbing hover:scale-110 transition-transform z-10;
+    @apply absolute w-5 h-5 bg-primary border-2 border-white rounded-full shadow-md cursor-grab active:cursor-grabbing z-10 transition-all duration-150;
     top: 50%;
     transform: translate(-50%, -50%);
+  }
+
+  .timeline-marker:hover, .timeline-marker:active {
+    @apply w-6 h-6;
   }
 
   .video-container {

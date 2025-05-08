@@ -173,7 +173,7 @@ export default function ClipControls({
                 }}
               >
                 {/* Small tooltip showing time */}
-                <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-primary text-white text-xs rounded px-1 py-0.5 whitespace-nowrap">
+                <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-primary text-white text-xs rounded px-1.5 py-0.5 whitespace-nowrap">
                   {formatTime(startTime)}
                 </div>
               </div>
@@ -201,7 +201,7 @@ export default function ClipControls({
                 }}
               >
                 {/* Small tooltip showing time */}
-                <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-primary text-white text-xs rounded px-1 py-0.5 whitespace-nowrap">
+                <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-primary text-white text-xs rounded px-1.5 py-0.5 whitespace-nowrap">
                   {formatTime(endTime)}
                 </div>
               </div>
