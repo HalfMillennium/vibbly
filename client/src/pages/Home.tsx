@@ -20,6 +20,7 @@ export default function Home() {
   const [loopClip, setLoopClip] = useState<boolean>(false);
   const [clipCreated, setClipCreated] = useState<boolean>(false);
   const [clipId, setClipId] = useState<string | null>(null);
+  const [previewClipFn, setPreviewClipFn] = useState<(() => void) | null>(null);
 
   const handleUrlSubmit = (url: string) => {
     // Extract video ID from YouTube URL
@@ -117,6 +118,7 @@ export default function Home() {
               loopClip={loopClip}
               onVideoTitleChange={setVideoTitle}
               onVideoDurationChange={setVideoDuration}
+              onPreviewReady={setPreviewClipFn}
             />
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
@@ -133,6 +135,11 @@ export default function Home() {
                   onIncludeSubtitlesChange={setIncludeSubtitles}
                   loopClip={loopClip}
                   onLoopClipChange={setLoopClip}
+                  onPreviewClip={() => {
+                    if (previewClipFn) {
+                      previewClipFn();
+                    }
+                  }}
                 />
               </div>
               
