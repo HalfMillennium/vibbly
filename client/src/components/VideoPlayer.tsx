@@ -10,7 +10,6 @@ interface VideoPlayerProps {
   loopClip: boolean;
   onVideoTitleChange: (title: string) => void;
   onVideoDurationChange: (duration: number) => void;
-  onPreviewReady?: (previewFn: () => void) => void;
 }
 
 export default function VideoPlayer({
@@ -20,18 +19,7 @@ export default function VideoPlayer({
   loopClip,
   onVideoTitleChange,
   onVideoDurationChange,
-  onPreviewReady,
 }: VideoPlayerProps) {
-  // Function for previewing the clip - will be passed to ClipControls
-  const previewClip = () => {
-    if (player && playerReady) {
-      // Seek to the start of the clip
-      seekTo(startTime);
-      // Start playback
-      play();
-      setIsPlaying(true);
-    }
-  };
   const playerRef = useRef<HTMLDivElement>(null);
   const [playerReady, setPlayerReady] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -94,13 +82,6 @@ export default function VideoPlayer({
       });
     }
   }, [videoId, loadVideo]);
-  
-  // Pass the previewClip function to the parent component when it's ready
-  useEffect(() => {
-    if (player && playerReady && onPreviewReady) {
-      onPreviewReady(previewClip);
-    }
-  }, [player, playerReady, onPreviewReady, previewClip, startTime, play]);
 
   const handleTogglePlay = () => {
     if (isPlaying) {

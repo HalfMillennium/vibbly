@@ -19,7 +19,6 @@ interface ClipControlsProps {
   onIncludeSubtitlesChange: (include: boolean) => void;
   loopClip: boolean;
   onLoopClipChange: (loop: boolean) => void;
-  onPreviewClip: () => void;
 }
 
 export default function ClipControls({
@@ -34,7 +33,6 @@ export default function ClipControls({
   onIncludeSubtitlesChange,
   loopClip,
   onLoopClipChange,
-  onPreviewClip,
 }: ClipControlsProps) {
   const [startTimeDisplay, setStartTimeDisplay] = useState(formatTime(startTime));
   const [endTimeDisplay, setEndTimeDisplay] = useState(formatTime(endTime || videoDuration));
@@ -292,7 +290,10 @@ export default function ClipControls({
             <Button 
               variant="outline"
               size="sm"
-              onClick={onPreviewClip}
+              onClick={() => {
+                // This would typically use the player instance to play the clip
+                // Implementation handled by the parent component
+              }}
               className="flex items-center text-gray-700 px-4"
             >
               <Play className="h-3.5 w-3.5 mr-1.5" />
