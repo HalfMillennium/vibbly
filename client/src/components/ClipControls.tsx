@@ -171,7 +171,12 @@ export default function ClipControls({
                     }
                   }
                 }}
-              ></div>
+              >
+                {/* Small tooltip showing time */}
+                <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-primary text-white text-xs rounded px-1 py-0.5 whitespace-nowrap">
+                  {formatTime(startTime)}
+                </div>
+              </div>
               
               {/* End Marker */}
               <div 
@@ -194,11 +199,16 @@ export default function ClipControls({
                     }
                   }
                 }}
-              ></div>
+              >
+                {/* Small tooltip showing time */}
+                <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-primary text-white text-xs rounded px-1 py-0.5 whitespace-nowrap">
+                  {formatTime(endTime)}
+                </div>
+              </div>
             </div>
             
             {/* Time Indicators */}
-            <div className="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-gray-500">
+            <div className="absolute bottom-1 left-2 right-2 flex justify-between text-xs text-gray-500">
               {timeIndicators}
             </div>
           </div>

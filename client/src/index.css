@@ -61,13 +61,16 @@
 /* Custom component styles */
 @layer components {
   .timeline-container {
-    @apply relative w-full h-16 mt-6 mb-4;
+    @apply relative w-full h-20 mt-6 mb-6 px-3;
   }
 
   .timeline-track {
-    @apply absolute h-2 w-full bg-gray-200 rounded-full overflow-hidden;
+    @apply absolute h-2 w-full bg-gray-200 rounded-full overflow-visible;
     top: 50%;
     transform: translateY(-50%);
+    left: 12px;
+    right: 12px;
+    width: calc(100% - 24px);
   }
 
   .timeline-selection {
@@ -77,7 +80,7 @@
   }
 
   .timeline-marker {
-    @apply absolute w-5 h-5 bg-primary border-2 border-white rounded-full shadow cursor-grab active:cursor-grabbing;
+    @apply absolute w-6 h-6 bg-primary border-2 border-white rounded-full shadow-md cursor-grab active:cursor-grabbing hover:scale-110 transition-transform z-10;
     top: 50%;
     transform: translate(-50%, -50%);
   }
