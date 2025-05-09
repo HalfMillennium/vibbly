@@ -1,0 +1,35 @@
+<svg width="100%" height="100%" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <g stroke="#333" stroke-width="1.5" fill="none">
+    <!-- Cafe table with two people -->
+    <rect x="60" y="100" width="80" height="10" rx="2" /> <!-- Table -->
+    
+    <!-- Person 1 sitting -->
+    <circle cx="70" cy="85" r="10" /> <!-- Head -->
+    <path d="M70,95 L70,120" /> <!-- Body -->
+    <path d="M70,100 L60,110" /> <!-- Left arm -->
+    <path d="M70,100 L80,110" /> <!-- Right arm -->
+    
+    <!-- Person 2 sitting -->
+    <circle cx="130" cy="85" r="10" /> <!-- Head -->
+    <path d="M130,95 L130,120" /> <!-- Body -->
+    <path d="M130,100 L120,110" /> <!-- Left arm -->
+    <path d="M130,100 L140,110" /> <!-- Right arm -->
+    
+    <!-- Chairs -->
+    <path d="M50,120 L70,120 L70,130 L50,130 Z" /> <!-- Chair 1 -->
+    <path d="M150,120 L130,120 L130,130 L150,130 Z" /> <!-- Chair 2 -->
+    
+    <!-- Coffee cups and plates -->
+    <ellipse cx="80" cy="105" rx="5" ry="3" />
+    <ellipse cx="120" cy="105" rx="5" ry="3" />
+    
+    <!-- Plants in background -->
+    <path d="M30,70 C30,50 40,40 50,60 C60,40 70,50 70,70" />
+    <path d="M30,70 L30,90" />
+    <rect x="25" y="90" width="10" height="10" rx="1" />
+    
+    <path d="M170,70 C170,50 160,40 150,60 C140,40 130,50 130,70" />
+    <path d="M170,70 L170,90" />
+    <rect x="165" y="90" width="10" height="10" rx="1" />
+  </g>
+</svg>
