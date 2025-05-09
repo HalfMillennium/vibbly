@@ -1,0 +1,11 @@
+<svg width="100%" height="100%" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <g stroke="#333" stroke-width="1.5" fill="none">
+    <rect x="40" y="40" width="120" height="120" rx="2" />
+    <circle cx="100" cy="80" r="20" />
+    <path d="M80,110 L120,110" />
+    <path d="M70,130 L130,130" />
+    <path d="M80,150 L120,150" />
+    <line x1="70" y1="60" x2="130" y2="60" />
+    <path d="M70,170 C80,180 120,180 130,170" />
+  </g>
+</svg>
