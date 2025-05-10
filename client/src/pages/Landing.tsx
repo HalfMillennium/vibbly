@@ -61,10 +61,10 @@ export default function Landing() {
           
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button asChild className="bg-primary hover:bg-primary/90 text-white px-6 sm:px-8 py-4 sm:py-6 rounded-full text-sm sm:text-base w-full sm:w-auto">
-              <Link to="/create">Start for free</Link>
+              <Link to="/register">Get Started</Link>
             </Button>
-            <Button variant="outline" className="bg-[#222] text-white hover:bg-[#333] border-0 px-6 sm:px-8 py-4 sm:py-6 rounded-full text-sm sm:text-base w-full sm:w-auto mt-3 sm:mt-0">
-              <a href="#">Book a demo</a>
+            <Button asChild variant="outline" className="bg-[#222] text-white hover:bg-[#333] border-0 px-6 sm:px-8 py-4 sm:py-6 rounded-full text-sm sm:text-base w-full sm:w-auto mt-3 sm:mt-0">
+              <Link to="/login">Log in</Link>
             </Button>
           </div>
         </div>

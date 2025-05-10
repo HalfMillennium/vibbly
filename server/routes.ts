@@ -16,6 +16,20 @@ if (process.env.STRIPE_SECRET_KEY) {
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Authentication routes
+  app.get("/api/auth/me", isAuthenticated, async (req, res) => {
+    // User is already attached to the request by the authentication middleware
+    if (req.user) {
+      res.json({
+        id: req.user.id,
+        email: req.user.email,
+        username: req.user.username,
+        subscriptionStatus: req.user.subscriptionStatus
+      });
+    } else {
+      res.status(401).json({ message: "Not authenticated" });
+    }
+  });
+  
   app.post("/api/register", async (req, res) => {
     try {
       const validationResult = insertUserSchema.safeParse(req.body);

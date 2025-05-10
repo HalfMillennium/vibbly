@@ -3,8 +3,8 @@ import { useLocation } from 'wouter';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -26,9 +26,9 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function Login() {
-  const [isLoading, setIsLoading] = useState(false);
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const { login, isLoading } = useAuth();
 
   const {
     register,
@@ -43,40 +43,16 @@ export default function Login() {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    setIsLoading(true);
+    const success = await login(data.email, data.password);
     
-    try {
-      const response = await apiRequest('POST', '/api/login', data);
-      const userData = await response.json();
-      
-      if (response.ok) {
-        toast({
-          title: 'Login successful',
-          description: 'Welcome back!',
-        });
-        
-        // If user has an active subscription, redirect to the clip creation page
-        // Otherwise, redirect to the subscription page
-        if (userData.subscriptionStatus === 'active') {
-          setLocation('/');
-        } else {
-          setLocation('/subscribe');
-        }
-      } else {
-        toast({
-          title: 'Login failed',
-          description: userData.message || 'Invalid credentials',
-          variant: 'destructive',
-        });
-      }
-    } catch (error) {
+    if (success) {
       toast({
-        title: 'Login failed',
-        description: 'An error occurred during login. Please try again.',
-        variant: 'destructive',
+        title: 'Login successful',
+        description: 'Welcome back!',
       });
-    } finally {
-      setIsLoading(false);
+      
+      // Redirect based on subscription status
+      // This is handled by the login function in useAuth
     }
   };
 
