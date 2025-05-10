@@ -35,9 +35,9 @@ export default function Landing() {
             </div>
             
             <div className="flex items-center space-x-4">
-              <a href="#" className="text-gray-700 text-sm font-medium hidden sm:inline-block">Log in</a>
+              <Link to="/login" className="text-gray-700 text-sm font-medium hidden sm:inline-block">Log in</Link>
               <Button asChild className="bg-primary hover:bg-primary/90 text-white rounded-full">
-                <Link to="/create">Start for free</Link>
+                <Link to="/register">Sign up</Link>
               </Button>
             </div>
           </div>
