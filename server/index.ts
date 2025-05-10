@@ -3,6 +3,7 @@ import session from "express-session";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { storage } from "./storage";
+import { attachAuthMethods } from "./middleware/auth";
 
 const app = express();
 app.use(express.json());
@@ -28,6 +29,9 @@ declare module "express-session" {
     userEmail: string;
   }
 }
+
+// Attach auth methods to the request object
+app.use(attachAuthMethods);
 
 // This middleware attaches the current user to the request object if they are logged in
 app.use(async (req: Request & { user?: any }, res, next) => {
