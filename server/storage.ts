@@ -71,7 +71,7 @@ export class MemStorage implements IStorage {
       endTime: insertClip.endTime,
       includeSubtitles: insertClip.includeSubtitles ?? false,
       shareId: insertClip.shareId,
-      userId: insertClip.userId,
+      userId: insertClip.userId || null,
       createdAt: now
     };
     
@@ -107,8 +107,8 @@ export class MemStorage implements IStorage {
     const user: User = {
       id,
       email,
-      stripeCustomerId: insertUser.stripeCustomerId,
-      stripeSubscriptionId: insertUser.stripeSubscriptionId,
+      stripeCustomerId: insertUser.stripeCustomerId || null,
+      stripeSubscriptionId: insertUser.stripeSubscriptionId || null,
       subscriptionStatus: insertUser.subscriptionStatus || 'inactive',
       createdAt: now,
       updatedAt: now

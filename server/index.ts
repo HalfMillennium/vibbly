@@ -1,10 +1,48 @@
 import express, { type Request, Response, NextFunction } from "express";
+import session from "express-session";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { storage } from "./storage";
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// Configure session middleware
+const SESSION_SECRET = process.env.SESSION_SECRET || "s3cr3t_k3y_f0r_d3v"; // Should be changed in production
+app.use(session({
+  secret: SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+  }
+}));
+
+// Authentication middleware
+declare module "express-session" {
+  interface SessionData {
+    userId: number;
+    userEmail: string;
+  }
+}
+
+// This middleware attaches the current user to the request object if they are logged in
+app.use(async (req: Request & { user?: any }, res, next) => {
+  if (req.session && req.session.userId) {
+    try {
+      const user = await storage.getUserById(req.session.userId);
+      if (user) {
+        req.user = user;
+      }
+    } catch (error) {
+      console.error("Error fetching user from session:", error);
+    }
+  }
+  next();
+});
 
 app.use((req, res, next) => {
   const start = Date.now();
