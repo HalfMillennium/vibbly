@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/useAuth";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import Landing from "@/pages/Landing";
@@ -17,12 +18,28 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Landing} />
-      <Route path="/create" component={Home} />
+      <Route path="/create">
+        <ProtectedRoute requireSubscription={true}>
+          <Home />
+        </ProtectedRoute>
+      </Route>
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
-      <Route path="/subscribe" component={Subscribe} />
-      <Route path="/subscription/success" component={SubscriptionSuccess} />
-      <Route path="/subscription/cancel" component={SubscriptionCancel} />
+      <Route path="/subscribe">
+        <ProtectedRoute requireSubscription={false}>
+          <Subscribe />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/subscription/success">
+        <ProtectedRoute requireSubscription={false}>
+          <SubscriptionSuccess />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/subscription/cancel">
+        <ProtectedRoute requireSubscription={false}>
+          <SubscriptionCancel />
+        </ProtectedRoute>
+      </Route>
       <Route component={NotFound} />
     </Switch>
   );

@@ -49,38 +49,23 @@ export default function Register() {
   });
 
   const onSubmit = async (data: RegisterFormData) => {
-    setIsLoading(true);
+    // Remove confirmPassword as it's not needed for the API request
+    const { confirmPassword, ...registerData } = data;
     
-    try {
-      // Remove confirmPassword as it's not needed for the API request
-      const { confirmPassword, ...registerData } = data;
-      
-      const response = await apiRequest('POST', '/api/register', registerData);
-      const userData = await response.json();
-      
-      if (response.ok) {
-        toast({
-          title: 'Registration successful',
-          description: 'Your account has been created. Please subscribe to continue.',
-        });
-        
-        // Redirect to the subscription page after successful registration
-        setLocation('/subscribe');
-      } else {
-        toast({
-          title: 'Registration failed',
-          description: userData.message || 'Failed to create account',
-          variant: 'destructive',
-        });
-      }
-    } catch (error) {
+    const success = await registerUser(
+      registerData.username,
+      registerData.email,
+      registerData.password
+    );
+    
+    if (success) {
       toast({
-        title: 'Registration failed',
-        description: 'An error occurred during registration. Please try again.',
-        variant: 'destructive',
+        title: 'Registration successful',
+        description: 'Your account has been created. Please subscribe to continue.',
       });
-    } finally {
-      setIsLoading(false);
+      
+      // Redirect to the subscription page after successful registration
+      setLocation('/subscribe');
     }
   };
 
