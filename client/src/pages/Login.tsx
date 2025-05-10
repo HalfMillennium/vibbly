@@ -6,6 +6,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 
+import AppHeader from '@/components/AppHeader';
+import AppFooter from '@/components/AppFooter';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -57,65 +59,69 @@ export default function Login() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-background to-muted">
-      <Card className="w-full max-w-md mx-4">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
-          <CardDescription className="text-center">
-            Enter your email and password to access your account
-          </CardDescription>
-        </CardHeader>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="your.email@example.com"
-                {...register('email')}
-              />
-              {errors.email && (
-                <p className="text-sm text-destructive">{errors.email.message}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
-                <a href="#" className="text-sm text-primary hover:underline">
-                  Forgot password?
-                </a>
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-background to-muted">
+      <AppHeader />
+      <main className="flex-1 flex justify-center items-center px-4 py-8">
+        <Card className="w-full max-w-md">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl font-bold text-center">Login to vibbly</CardTitle>
+            <CardDescription className="text-center">
+              Enter your email and password to access your account
+            </CardDescription>
+          </CardHeader>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="your.email@example.com"
+                  {...register('email')}
+                />
+                {errors.email && (
+                  <p className="text-sm text-destructive">{errors.email.message}</p>
+                )}
               </div>
-              <Input
-                id="password"
-                type="password"
-                {...register('password')}
-              />
-              {errors.password && (
-                <p className="text-sm text-destructive">{errors.password.message}</p>
-              )}
-            </div>
-          </CardContent>
-          <CardFooter className="flex flex-col space-y-2">
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Logging in...' : 'Login'}
-            </Button>
-            <p className="text-center text-sm">
-              Don't have an account?{' '}
-              <a 
-                href="#" 
-                onClick={(e) => {
-                  e.preventDefault();
-                  setLocation('/register');
-                }}
-                className="text-primary hover:underline"
-              >
-                Register
-              </a>
-            </p>
-          </CardFooter>
-        </form>
-      </Card>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password">Password</Label>
+                  <a href="#" className="text-sm text-primary hover:underline">
+                    Forgot password?
+                  </a>
+                </div>
+                <Input
+                  id="password"
+                  type="password"
+                  {...register('password')}
+                />
+                {errors.password && (
+                  <p className="text-sm text-destructive">{errors.password.message}</p>
+                )}
+              </div>
+            </CardContent>
+            <CardFooter className="flex flex-col space-y-2">
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? 'Logging in...' : 'Login'}
+              </Button>
+              <p className="text-center text-sm">
+                Don't have an account?{' '}
+                <a 
+                  href="#" 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setLocation('/register');
+                  }}
+                  className="text-primary hover:underline"
+                >
+                  Register
+                </a>
+              </p>
+            </CardFooter>
+          </form>
+        </Card>
+      </main>
+      <AppFooter />
     </div>
   );
 }
