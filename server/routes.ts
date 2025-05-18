@@ -1,11 +1,12 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertClipSchema, insertUserSchema } from "@shared/schema";
+import { insertClipSchema } from "@shared/schema";
 import { generateId } from "../client/src/lib/utils";
-import { isAuthenticated, hasActiveSubscription } from "./middleware/auth";
+import { requireStripeSubscription } from "./middleware/clerk-routes";
 import * as stripeService from "./services/stripe";
 import Stripe from "stripe";
+import { clerkClient } from '@clerk/clerk-sdk-node';
 
 // Create Stripe webhook instance with secret
 const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET || '';
@@ -15,119 +16,75 @@ if (process.env.STRIPE_SECRET_KEY) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Authentication routes
-  app.get("/api/auth/me", isAuthenticated, async (req, res) => {
-    // User is already attached to the request by the authentication middleware
-    if (req.user) {
-      res.json({
-        id: req.user.id,
-        email: req.user.email,
-        username: req.user.username,
-        subscriptionStatus: req.user.subscriptionStatus
-      });
-    } else {
-      res.status(401).json({ message: "Not authenticated" });
-    }
-  });
-  
-  app.post("/api/register", async (req, res) => {
+  // Authentication routes using Clerk
+  app.get("/api/auth/me", async (req, res) => {
     try {
-      const validationResult = insertUserSchema.safeParse(req.body);
-      
-      if (!validationResult.success) {
-        return res.status(400).json({ 
-          message: "Invalid user data",
-          errors: validationResult.error.format() 
-        });
+      // Check authentication with Clerk
+      if (!req.auth.userId) {
+        return res.status(401).json({ message: "Authentication required" });
       }
+
+      // Get user from our database
+      const user = await storage.getUserByClerkId(req.auth.userId);
       
-      const userData = validationResult.data;
-      
-      // Check if user already exists
-      const existingUser = await storage.getUserByEmail(userData.email);
-      if (existingUser) {
-        return res.status(409).json({ message: "User already exists" });
-      }
-      
-      // Create new user
-      const user = await storage.createUser(userData);
-      
-      // Set user in session
-      if (req.session) {
-        req.session.userId = user.id;
-        req.session.userEmail = user.email;
-      }
-      
-      res.status(201).json({ 
-        id: user.id,
-        email: user.email,
-        username: user.username
-      });
-    } catch (error) {
-      console.error("Error registering user:", error);
-      res.status(500).json({ message: "Failed to register user" });
-    }
-  });
-  
-  app.post("/api/login", async (req, res) => {
-    try {
-      const { email, password } = req.body;
-      
-      if (!email || !password) {
-        return res.status(400).json({ message: "Email and password are required" });
-      }
-      
-      // Find user by email
-      const user = await storage.getUserByEmail(email);
       if (!user) {
-        return res.status(401).json({ message: "Invalid credentials" });
+        // User exists in Clerk but not in our DB yet, create them
+        try {
+          const clerkUser = await clerkClient.users.getUser(req.auth.userId);
+          
+          // Find primary email
+          const primaryEmail = clerkUser.emailAddresses.find(
+            email => email.id === clerkUser.primaryEmailAddressId
+          )?.emailAddress;
+          
+          if (!primaryEmail) {
+            return res.status(400).json({ message: "User email not found" });
+          }
+          
+          // Create user in our database
+          const newUser = await storage.createUser({
+            clerkId: req.auth.userId,
+            email: primaryEmail,
+            username: clerkUser.username || `user-${clerkUser.id.substring(0, 8)}`
+          });
+          
+          return res.json({
+            id: newUser.id,
+            email: newUser.email,
+            username: newUser.username,
+            isSubscribed: !!newUser.stripeCustomerId,
+            subscriptionStatus: newUser.subscriptionStatus
+          });
+        } catch (error) {
+          console.error("Error creating user from Clerk:", error);
+          return res.status(500).json({ message: "Failed to create user" });
+        }
       }
       
-      // In a real app, we would compare hashed passwords here
-      // For simplicity, we're doing a direct comparison
-      if (user.password !== password) {
-        return res.status(401).json({ message: "Invalid credentials" });
-      }
-      
-      // Set user in session
-      if (req.session) {
-        req.session.userId = user.id;
-        req.session.userEmail = user.email;
-      }
-      
-      res.json({ 
+      // Return user info
+      res.json({
         id: user.id,
         email: user.email,
         username: user.username,
+        isSubscribed: !!user.stripeCustomerId,
         subscriptionStatus: user.subscriptionStatus
       });
     } catch (error) {
-      console.error("Error logging in:", error);
-      res.status(500).json({ message: "Failed to log in" });
+      console.error("Error getting user:", error);
+      res.status(500).json({ message: "Failed to get user information" });
     }
   });
   
-  app.post("/api/logout", (req, res) => {
-    req.session?.destroy((err) => {
-      if (err) {
-        console.error("Error destroying session:", err);
-        return res.status(500).json({ message: "Failed to log out" });
-      }
-      
-      res.clearCookie("connect.sid");
-      res.json({ message: "Logged out successfully" });
-    });
-  });
-  
   // Subscription routes
-  app.post("/api/subscription/checkout", isAuthenticated, async (req, res) => {
+  app.post("/api/subscription/checkout", async (req, res) => {
     try {
-      const userId = req.session?.userId;
-      if (!userId) {
+      // Check authentication with Clerk
+      if (!req.auth.userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
       
-      const user = await storage.getUserById(userId);
+      // Get user from our database
+      const user = await storage.getUserByClerkId(req.auth.userId);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
@@ -146,14 +103,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  app.post("/api/subscription/portal", isAuthenticated, async (req, res) => {
+  app.post("/api/subscription/portal", async (req, res) => {
     try {
-      const userId = req.session?.userId;
-      if (!userId) {
+      // Check authentication with Clerk
+      if (!req.auth.userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
       
-      const user = await storage.getUserById(userId);
+      // Get user from our database
+      const user = await storage.getUserByClerkId(req.auth.userId);
       if (!user || !user.stripeCustomerId) {
         return res.status(404).json({ message: "User not found or no subscription" });
       }

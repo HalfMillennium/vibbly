@@ -38,7 +38,13 @@ export const storage = {
   },
 
   async createUser(data: Partial<User>): Promise<User> {
-    const results = await db.insert(users).values(data).returning();
+    // Type assertion to ensure required fields
+    const insertData = data as {
+      email: string;
+      username: string;
+      clerkId: string;
+    };
+    const results = await db.insert(users).values(insertData).returning();
     return results[0];
   },
 

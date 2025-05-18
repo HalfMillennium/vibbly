@@ -3,7 +3,7 @@ import session from "express-session";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { storage } from "./storage";
-import { attachAuthMethods } from "./middleware/auth";
+import { ClerkExpressWithAuth } from '@clerk/clerk-sdk-node';
 
 const app = express();
 app.use(express.json());
@@ -30,19 +30,19 @@ declare module "express-session" {
   }
 }
 
-// Attach auth methods to the request object
-app.use(attachAuthMethods);
+// Add Clerk authentication middleware
+app.use(ClerkExpressWithAuth());
 
-// This middleware attaches the current user to the request object if they are logged in
-app.use(async (req: Request & { user?: any }, res, next) => {
-  if (req.session && req.session.userId) {
+// This middleware integrates Clerk auth with our database
+app.use(async (req: Request, res, next) => {
+  if (req.auth && req.auth.userId) {
     try {
-      const user = await storage.getUserById(req.session.userId);
+      const user = await storage.getUserByClerkId(req.auth.userId);
       if (user) {
-        req.user = user;
+        (req as any).user = user;
       }
     } catch (error) {
-      console.error("Error fetching user from session:", error);
+      console.error("Error fetching user from Clerk ID:", error);
     }
   }
   next();
