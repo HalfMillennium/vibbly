@@ -1,13 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
-import { Clerk } from '@clerk/clerk-sdk-node';
+import { clerkClient } from '@clerk/clerk-sdk-node';
 import { storage } from '../storage';
 
-// Create Clerk instance
+// Check for Clerk API key
 if (!process.env.CLERK_SECRET_KEY) {
   throw new Error('Missing required Clerk secret: CLERK_SECRET_KEY');
 }
-
-const clerk = Clerk({ secretKey: process.env.CLERK_SECRET_KEY });
 
 /**
  * Middleware to verify the Clerk JWT token
@@ -23,53 +21,64 @@ export const requireClerkAuth = async (req: Request, res: Response, next: NextFu
     const token = authHeader.split(' ')[1];
     
     // Verify the token with Clerk
+    let clerkUserId;
+    
     try {
-      const session = await clerk.sessions.verifyToken(token);
-      if (!session) {
+      // Verify JWT token using Clerk's client
+      const { sub } = await clerkClient.verifyToken(token);
+      clerkUserId = sub;
+      
+      if (!clerkUserId) {
         return res.status(401).json({ error: 'Unauthorized: Invalid token' });
       }
     } catch (error) {
       return res.status(401).json({ error: 'Unauthorized: Token verification failed' });
     }
     
-    // Attach the user info to the request
-    const clerkUser = await clerk.users.getUser(session.userId);
-    if (!clerkUser) {
-      return res.status(401).json({ error: 'Unauthorized: User not found' });
-    }
-    
-    // Check if the user exists in our database
-    let user = await storage.getUserByClerkId(clerkUser.id);
-    
-    // If user doesn't exist in our database, create a new one
-    if (!user) {
-      // Get primary email
-      const primaryEmail = clerkUser.emailAddresses.find(
-        email => email.id === clerkUser.primaryEmailAddressId
-      )?.emailAddress;
+    // Get user from Clerk
+    try {
+      const clerkUser = await clerkClient.users.getUser(clerkUserId);
       
-      if (!primaryEmail) {
-        return res.status(400).json({ error: 'User has no primary email address' });
+      if (!clerkUser) {
+        return res.status(401).json({ error: 'Unauthorized: User not found' });
       }
       
-      // Create user in our database
-      user = await storage.createUser({
-        clerkId: clerkUser.id,
-        email: primaryEmail,
-        username: clerkUser.username || primaryEmail.split('@')[0],
-        stripeCustomerId: null,
-        stripeSubscriptionId: null,
-        subscriptionStatus: null,
-      });
+      // Check if the user exists in our database
+      let user = await storage.getUserByClerkId(clerkUser.id);
+      
+      // If user doesn't exist in our database, create a new one
+      if (!user) {
+        // Get primary email
+        const primaryEmail = clerkUser.emailAddresses.find(
+          email => email.id === clerkUser.primaryEmailAddressId
+        )?.emailAddress;
+        
+        if (!primaryEmail) {
+          return res.status(400).json({ error: 'User has no primary email address' });
+        }
+        
+        // Create user in our database
+        user = await storage.createUser({
+          clerkId: clerkUser.id,
+          email: primaryEmail,
+          username: clerkUser.username || primaryEmail.split('@')[0],
+          stripeCustomerId: null,
+          stripeSubscriptionId: null,
+          subscriptionStatus: null,
+        });
+      }
+      
+      // Attach the user to the request object
+      req.user = user;
+      
+      // Add isAuthenticated method
+      req.isAuthenticated = () => true;
+      
+      next();
+    } catch (error) {
+      console.error('Error getting user from Clerk:', error);
+      return res.status(401).json({ error: 'Unauthorized: Failed to retrieve user information' });
     }
-    
-    // Attach the user to the request object
-    req.user = user;
-    
-    // Add isAuthenticated method
-    req.isAuthenticated = () => true;
-    
-    next();
   } catch (error) {
     console.error('Error verifying Clerk authentication:', error);
     return res.status(401).json({ error: 'Unauthorized: Authentication failed' });
