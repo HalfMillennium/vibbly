@@ -65,12 +65,12 @@ export default function CustomSignInForm() {
           description: 'Welcome back to vibbly!',
         });
         
-        setLocation('/subscription-check');
+        setLocation('/');
       } else {
-        // This should not happen with email/password auth normally
+        // Handle if additional verification is required
         toast({
           title: 'Additional verification needed',
-          description: 'Please check your email to complete the sign-in process.',
+          description: 'Please complete the verification process to sign in.',
         });
       }
     } catch (error: any) {

@@ -106,20 +106,12 @@ export default function CustomSignUpForm() {
       setIsLoading(true);
       
       // Complete the sign-up process with the verification code
-      const result = await signUp.update({
-        verifications: {
-          emailAddress: {
-            code
-          }
-        }
+      const completeSignUp = await signUp.attemptEmailAddressVerification({
+        code
       });
       
-      if (result.status === 'complete') {
-        // If verification is successful, create a session
-        await signUp.update({
-          active: true
-        });
-        
+      if (completeSignUp.status === 'complete') {
+        // Successful verification
         toast({
           title: 'Verification successful',
           description: 'Your account has been verified. You can now subscribe.',
@@ -199,11 +191,8 @@ export default function CustomSignUpForm() {
               onClick={async () => {
                 if (isLoaded && pendingVerification) {
                   try {
-                    // Resend verification email using the correct Clerk API method
-                    await signUp.create({
-                      emailAddress: signUp.emailAddress || '',
-                      password: '',
-                    });
+                    // Resend verification email
+                    await signUp.prepareEmailAddressVerification();
                     toast({
                       title: 'Code resent',
                       description: 'A new verification code has been sent to your email.',
