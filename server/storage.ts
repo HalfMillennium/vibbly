@@ -26,6 +26,16 @@ export const storage = {
     const results = await db.select().from(users).where(eq(users.id, id));
     return results[0];
   },
+  
+  async getUserByClerkId(clerkId: string): Promise<User | undefined> {
+    const results = await db.select().from(users).where(eq(users.clerkId, clerkId));
+    return results[0];
+  },
+  
+  async getUserByStripeCustomerId(stripeCustomerId: string): Promise<User | undefined> {
+    const results = await db.select().from(users).where(eq(users.stripeCustomerId, stripeCustomerId));
+    return results[0];
+  },
 
   async createUser(data: Partial<User>): Promise<User> {
     const results = await db.insert(users).values(data).returning();
@@ -39,6 +49,23 @@ export const storage = {
       .where(eq(users.id, id))
       .returning();
     return results[0];
+  },
+  
+  async updateUserSubscription(userId: number, subscriptionDetails: {
+    stripeSubscriptionId?: string;
+    subscriptionStatus?: string;
+  }): Promise<User | undefined> {
+    return this.updateUser(userId, subscriptionDetails);
+  },
+  
+  async updateStripeCustomerId(userId: number, stripeCustomerId: string): Promise<User | undefined> {
+    return this.updateUser(userId, { stripeCustomerId });
+  },
+  
+  async updateStripeCustomerIdByClerkId(clerkId: string, stripeCustomerId: string): Promise<User | undefined> {
+    const user = await this.getUserByClerkId(clerkId);
+    if (!user) return undefined;
+    return this.updateUser(user.id, { stripeCustomerId });
   },
 
   async getClipsByUserId(userId: number): Promise<Clip[]> {
