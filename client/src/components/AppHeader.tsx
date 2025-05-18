@@ -11,10 +11,10 @@ export default function AppHeader() {
       <div className="container mx-auto flex items-center justify-between">
         <Link href="/">
           <a className="flex items-center space-x-2">
-            <img src={vibblyLogo} alt="vibbly logo" className="h-8" />
+            <img src={vibblyLogo} alt="vibbly logo" className="h-16 w-auto" />
           </a>
         </Link>
-        
+
         <div className="flex items-center space-x-4">
           {isAuthenticated ? (
             <>
