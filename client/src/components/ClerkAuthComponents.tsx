@@ -1,19 +1,19 @@
-import { SignIn, SignUp, useUser } from "@clerk/clerk-react";
+import { useUser } from "@clerk/clerk-react";
 import { useLocation } from "wouter";
 import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import AppHeader from "./AppHeader";
 import AppFooter from "./AppFooter";
+import CustomSignInForm from "./CustomSignInForm";
+import CustomSignUpForm from "./CustomSignUpForm";
 
 export function SignInPage() {
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-background to-muted">
       <AppHeader />
       <main className="flex-1 flex justify-center items-center px-4 py-8">
-        <div className="w-full max-w-md">
-          <SignIn redirectUrl="/subscription-check" />
-        </div>
+        <CustomSignInForm />
       </main>
       <AppFooter />
     </div>
@@ -25,9 +25,7 @@ export function SignUpPage() {
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-background to-muted">
       <AppHeader />
       <main className="flex-1 flex justify-center items-center px-4 py-8">
-        <div className="w-full max-w-md">
-          <SignUp redirectUrl="/subscription-check" />
-        </div>
+        <CustomSignUpForm />
       </main>
       <AppFooter />
     </div>
