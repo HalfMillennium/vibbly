@@ -12,7 +12,7 @@ export function SignInPage() {
       <AppHeader />
       <main className="flex-1 flex justify-center items-center px-4 py-8">
         <div className="w-full max-w-md">
-          <SignIn redirectUrl="/subscription-check" />
+          <SignIn forceRedirectUrl="/subscription-check" />
         </div>
       </main>
       <AppFooter />
@@ -26,7 +26,7 @@ export function SignUpPage() {
       <AppHeader />
       <main className="flex-1 flex justify-center items-center px-4 py-8">
         <div className="w-full max-w-md">
-          <SignUp redirectUrl="/subscription-check" />
+          <SignUp forceRedirectUrl="/subscription-check" />
         </div>
       </main>
       <AppFooter />
@@ -38,46 +38,47 @@ export function SubscriptionCheckPage() {
   const { isSignedIn, user } = useUser();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  
+
   // Check subscription status when user is signed in
   useEffect(() => {
     if (isSignedIn && user) {
       // Sync with our backend
       const checkSubscription = async () => {
         try {
-          const response = await apiRequest('GET', '/api/auth/me');
-          
+          const response = await apiRequest("GET", "/api/auth/me");
+
           if (response.ok) {
             const userData = await response.json();
-            
+
             // Check if user has a subscription
             if (userData.isSubscribed) {
               // User has a subscription, redirect to create page
-              setLocation('/create');
+              setLocation("/create");
             } else {
               // User doesn't have a subscription, redirect to subscribe page
-              setLocation('/subscribe');
+              setLocation("/subscribe");
             }
           } else {
             // User exists in Clerk but not in our database, redirect to subscribe
-            setLocation('/subscribe');
+            setLocation("/subscribe");
           }
         } catch (error) {
-          console.error('Error checking subscription:', error);
+          console.error("Error checking subscription:", error);
           toast({
-            title: 'Error',
-            description: 'Failed to check subscription status. Please try again.',
-            variant: 'destructive',
+            title: "Error",
+            description:
+              "Failed to check subscription status. Please try again.",
+            variant: "destructive",
           });
-          setLocation('/subscribe');
+          setLocation("/subscribe");
         }
       };
-      
+
       // Run the check
       checkSubscription();
     } else if (!isSignedIn) {
       // Not signed in, redirect to login
-      setLocation('/login');
+      setLocation("/login");
     }
   }, [isSignedIn, user, setLocation, toast]);
 
@@ -86,7 +87,9 @@ export function SubscriptionCheckPage() {
       <AppHeader />
       <main className="flex-1 flex justify-center items-center px-4 py-8">
         <div className="w-full max-w-md text-center">
-          <h1 className="text-2xl font-bold mb-4">Checking your subscription...</h1>
+          <h1 className="text-2xl font-bold mb-4">
+            Checking your subscription...
+          </h1>
           <div className="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full mx-auto"></div>
           <p className="mt-4 text-muted-foreground">
             We're verifying your account details.
