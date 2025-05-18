@@ -1,4 +1,4 @@
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { useLocation } from 'wouter';
 import { useAuth } from '@/hooks/useAuth';
 import { Loader2 } from 'lucide-react';
@@ -16,23 +16,33 @@ export default function ProtectedRoute({
   const { isAuthenticated, isSubscribed, isLoading } = useAuth();
   const { isSignedIn, isLoaded: isClerkLoaded } = useUser();
   const [, setLocation] = useLocation();
+  const [hasRedirected, setHasRedirected] = useState(false);
 
   useEffect(() => {
+    // Prevent multiple redirects by tracking if we've already redirected
+    if (hasRedirected) return;
+
     // Wait for both Clerk and our custom auth hook to load
     if (!isLoading && isClerkLoaded) {
       if (!isSignedIn) {
         // Not signed in with Clerk, redirect to login
+        console.log("Protected route: not signed in, redirecting to login");
+        setHasRedirected(true);
         setLocation('/login');
       } else if (!isAuthenticated) {
         // Signed in with Clerk but not in our database yet,
         // go to subscription check to sync the accounts
+        console.log("Protected route: signed in but not authenticated in database, redirecting to subscription check");
+        setHasRedirected(true);
         setLocation('/subscription-check');
       } else if (requireSubscription && !isSubscribed) {
         // Authenticated but not subscribed, redirect to subscription page
+        console.log("Protected route: authenticated but not subscribed, redirecting to subscribe");
+        setHasRedirected(true);
         setLocation('/subscribe');
       }
     }
-  }, [isLoading, isClerkLoaded, isSignedIn, isAuthenticated, isSubscribed, requireSubscription, setLocation]);
+  }, [isLoading, isClerkLoaded, isSignedIn, isAuthenticated, isSubscribed, requireSubscription, setLocation, hasRedirected]);
 
   // Show loading spinner while checking auth status
   if (isLoading || !isClerkLoaded) {
@@ -48,6 +58,11 @@ export default function ProtectedRoute({
     return <>{children}</>;
   }
 
-  // Return null while redirecting (prevents flash of content)
-  return null;
+  // Return loading state while redirecting (prevents flash of content)
+  return (
+    <div className="flex h-screen items-center justify-center">
+      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <p className="ml-2">Redirecting...</p>
+    </div>
+  );
 }

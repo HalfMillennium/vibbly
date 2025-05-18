@@ -25,11 +25,11 @@ function Router() {
       </Route>
       <Route path="/login" component={SignInPage} />
       <Route path="/signup" component={SignUpPage} />
+      {/* Subscription check without protected route to prevent loops */}
       <Route path="/subscription-check" component={SubscriptionCheckPage} />
       <Route path="/subscribe">
-        <ProtectedRoute requireSubscription={false}>
-          <Subscribe />
-        </ProtectedRoute>
+        {/* No protected route for subscription page to prevent loops */}
+        <Subscribe />
       </Route>
       <Route path="/subscription/success">
         <ProtectedRoute requireSubscription={false}>
