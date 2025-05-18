@@ -12,7 +12,7 @@ export function SignInPage() {
       <AppHeader />
       <main className="flex-1 flex justify-center items-center px-4 py-8">
         <div className="w-full max-w-md">
-          <SignIn forceRedirectUrl="/subscription-check" />
+          <SignIn redirectUrl="/subscription-check" />
         </div>
       </main>
       <AppFooter />
@@ -26,7 +26,7 @@ export function SignUpPage() {
       <AppHeader />
       <main className="flex-1 flex justify-center items-center px-4 py-8">
         <div className="w-full max-w-md">
-          <SignUp forceRedirectUrl="/subscription-check" />
+          <SignUp redirectUrl="/subscription-check" />
         </div>
       </main>
       <AppFooter />
