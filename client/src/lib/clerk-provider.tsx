@@ -16,6 +16,10 @@ export function ClerkProvider({ children }: { children: ReactNode }) {
           card: 'bg-background border border-border shadow-sm',
         }
       }}
+      options={{
+        loadCaptchaScript: false,
+        serviceWorkerEnabled: false
+      }}
     >
       {children}
     </BaseClerkProvider>
