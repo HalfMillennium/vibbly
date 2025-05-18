@@ -2,13 +2,16 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 import { useLocation } from 'wouter';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
+import { useUser, useClerk } from '@clerk/clerk-react';
 
 // Define user type
 interface User {
   id: number;
   email: string;
   username: string;
+  isSubscribed: boolean;
   subscriptionStatus: string | null;
+  stripeCustomerId?: string | null;
 }
 
 // Define auth context type
@@ -32,17 +35,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const { isSignedIn, user: clerkUser } = useUser();
+  const { signOut } = useClerk();
 
   // Check if user is authenticated
   const isAuthenticated = !!user;
   
   // Check if user has active subscription
-  const isSubscribed = isAuthenticated && user?.subscriptionStatus === 'active';
+  const isSubscribed = isAuthenticated && !!user?.stripeCustomerId;
 
-  // Check auth status when component mounts
+  // Check auth status when Clerk user changes
   useEffect(() => {
-    checkAuthStatus();
-  }, []);
+    if (isSignedIn && clerkUser) {
+      checkAuthStatus();
+    } else {
+      setUser(null);
+      setIsLoading(false);
+    }
+  }, [isSignedIn, clerkUser]);
 
   // Function to check authentication status
   const checkAuthStatus = async () => {
@@ -53,6 +63,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (response.ok) {
         const userData = await response.json();
         setUser(userData);
+        
+        // If user is not subscribed, redirect to subscription page
+        if (!userData.isSubscribed) {
+          setLocation('/subscribe');
+        }
       } else {
         setUser(null);
       }
@@ -64,75 +79,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Login function
+  // Login function is handled by Clerk
   const login = async (email: string, password: string): Promise<boolean> => {
-    setIsLoading(true);
-    try {
-      const response = await apiRequest('POST', '/api/login', { email, password });
-      
-      if (response.ok) {
-        const userData = await response.json();
-        setUser(userData);
-        return true;
-      } else {
-        const errorData = await response.json();
-        toast({
-          title: 'Login failed',
-          description: errorData.message || 'Invalid credentials',
-          variant: 'destructive',
-        });
-        return false;
-      }
-    } catch (error) {
-      console.error('Error during login:', error);
-      toast({
-        title: 'Login failed',
-        description: 'An error occurred during login. Please try again.',
-        variant: 'destructive',
-      });
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
+    // This is just a stub for compatibility
+    return true;
   };
 
-  // Register function
+  // Register function is handled by Clerk
   const register = async (username: string, email: string, password: string): Promise<boolean> => {
-    setIsLoading(true);
-    try {
-      const response = await apiRequest('POST', '/api/register', { username, email, password });
-      
-      if (response.ok) {
-        const userData = await response.json();
-        setUser(userData);
-        return true;
-      } else {
-        const errorData = await response.json();
-        toast({
-          title: 'Registration failed',
-          description: errorData.message || 'Failed to create account',
-          variant: 'destructive',
-        });
-        return false;
-      }
-    } catch (error) {
-      console.error('Error during registration:', error);
-      toast({
-        title: 'Registration failed',
-        description: 'An error occurred during registration. Please try again.',
-        variant: 'destructive',
-      });
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
+    // This is just a stub for compatibility
+    return true;
   };
 
-  // Logout function
+  // Logout function with Clerk
   const logout = async () => {
     setIsLoading(true);
     try {
-      await apiRequest('POST', '/api/logout');
+      await signOut();
       setUser(null);
       setLocation('/');
     } catch (error) {

@@ -2,6 +2,7 @@ import { Link } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import vibblyLogo from "@assets/vibbly_logo.png";
+import { UserButton, useClerk, useUser } from "@clerk/clerk-react";
 
 export default function AppHeader() {
   const { isAuthenticated, logout } = useAuth();
