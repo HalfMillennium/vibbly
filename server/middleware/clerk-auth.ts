@@ -2,115 +2,100 @@ import { Request, Response, NextFunction } from 'express';
 import { clerkClient } from '@clerk/clerk-sdk-node';
 import { storage } from '../storage';
 
-// Check for Clerk API key
-if (!process.env.CLERK_SECRET_KEY) {
-  throw new Error('Missing required Clerk secret: CLERK_SECRET_KEY');
+// Type extension for Express Request
+declare global {
+  namespace Express {
+    interface Request {
+      clerkUser?: any;
+      clerkId?: string;
+      auth: {
+        userId: string | null;
+        sessionId: string | null;
+        getToken: () => Promise<string | null>;
+      };
+    }
+  }
 }
 
-/**
- * Middleware to verify the Clerk JWT token
- */
+// Middleware to verify Clerk token and attach user info
 export const requireClerkAuth = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // Get the session token from the Authorization header
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ error: 'Unauthorized: No token provided' });
+    // Skip auth for specific routes
+    if (req.path === '/api/health' || req.path.startsWith('/api/public')) {
+      return next();
     }
+
+    const { userId } = req.auth;
     
-    const token = authHeader.split(' ')[1];
-    
-    // Verify the token with Clerk
-    let clerkUserId;
-    
-    try {
-      // Verify JWT token using Clerk's client
-      const { sub } = await clerkClient.verifyToken(token);
-      clerkUserId = sub;
-      
-      if (!clerkUserId) {
-        return res.status(401).json({ error: 'Unauthorized: Invalid token' });
-      }
-    } catch (error) {
-      return res.status(401).json({ error: 'Unauthorized: Token verification failed' });
+    if (!userId) {
+      return res.status(401).json({ message: 'Unauthorized' });
     }
-    
-    // Get user from Clerk
+
     try {
-      const clerkUser = await clerkClient.users.getUser(clerkUserId);
+      // Get the Clerk user
+      const clerkUser = await clerkClient.users.getUser(userId);
+      req.clerkUser = clerkUser;
+      req.clerkId = userId;
+
+      // Check if user exists in our database
+      const dbUser = await storage.getUserByClerkId(userId);
       
-      if (!clerkUser) {
-        return res.status(401).json({ error: 'Unauthorized: User not found' });
-      }
-      
-      // Check if the user exists in our database
-      let user = await storage.getUserByClerkId(clerkUser.id);
-      
-      // If user doesn't exist in our database, create a new one
-      if (!user) {
+      // If not in our database, create the user
+      if (!dbUser) {
         // Get primary email
         const primaryEmail = clerkUser.emailAddresses.find(
           email => email.id === clerkUser.primaryEmailAddressId
         )?.emailAddress;
-        
+
         if (!primaryEmail) {
-          return res.status(400).json({ error: 'User has no primary email address' });
+          return res.status(400).json({ message: 'User email not found' });
         }
-        
-        // Create user in our database
-        user = await storage.createUser({
-          clerkId: clerkUser.id,
+
+        await storage.createUser({
           email: primaryEmail,
-          username: clerkUser.username || primaryEmail.split('@')[0],
-          stripeCustomerId: null,
-          stripeSubscriptionId: null,
-          subscriptionStatus: null,
+          username: clerkUser.username || `user-${clerkUser.id.substring(0, 8)}`,
+          clerkId: userId
         });
       }
-      
-      // Attach the user to the request object
-      req.user = user;
-      
-      // Add isAuthenticated method
-      req.isAuthenticated = () => true;
-      
+
       next();
-    } catch (error) {
-      console.error('Error getting user from Clerk:', error);
-      return res.status(401).json({ error: 'Unauthorized: Failed to retrieve user information' });
+    } catch (error: any) {
+      console.error('Error verifying Clerk auth:', error);
+      return res.status(401).json({ message: 'Authentication failed' });
     }
   } catch (error) {
-    console.error('Error verifying Clerk authentication:', error);
-    return res.status(401).json({ error: 'Unauthorized: Authentication failed' });
+    console.error('Clerk auth middleware error:', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
-/**
- * Middleware to check if the user has a subscription
- */
+// Middleware to check if the user has an active subscription
 export const requireSubscription = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // First ensure the user is authenticated
-    if (!req.user) {
-      return res.status(401).json({ error: 'Unauthorized: Authentication required' });
-    }
+    const { userId } = req.auth;
     
-    // Check if the user has an active subscription
-    if (!req.user.subscriptionStatus || req.user.subscriptionStatus !== 'active') {
-      return res.status(403).json({ error: 'Subscription required to access this resource' });
+    if (!userId) {
+      return res.status(401).json({ message: 'Unauthorized' });
     }
+
+    // Get user from our database
+    const user = await storage.getUserByClerkId(userId);
     
+    if (!user) {
+      return res.status(401).json({ message: 'User not found' });
+    }
+
+    // Check if the user has a Stripe customer ID (indicates they've subscribed)
+    if (!user.stripeCustomerId) {
+      return res.status(403).json({ 
+        message: 'Subscription required',
+        subscriptionRequired: true
+      });
+    }
+
     next();
   } catch (error) {
-    console.error('Error checking subscription:', error);
-    return res.status(500).json({ error: 'Server error checking subscription status' });
+    console.error('Subscription check error:', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
-};
-
-/**
- * Middleware that attaches auth methods to the request
- */
-export const attachAuthMethods = (req: Request, res: Response, next: NextFunction) => {
-  req.isAuthenticated = () => req.user !== undefined;
-  next();
 };

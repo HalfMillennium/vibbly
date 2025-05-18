@@ -6,10 +6,10 @@ import { generateId } from "../client/src/lib/utils";
 import { requireStripeSubscription } from "./middleware/clerk-routes";
 import * as stripeService from "./services/stripe";
 import Stripe from "stripe";
-import { clerkClient } from '@clerk/clerk-sdk-node';
+import { clerkClient } from "@clerk/clerk-sdk-node";
 
 // Create Stripe webhook instance with secret
-const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET || '';
+const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
 let stripe: Stripe | null = null;
 if (process.env.STRIPE_SECRET_KEY) {
   stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -26,55 +26,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Get user from our database
       const user = await storage.getUserByClerkId(req.auth.userId);
-      
+
       if (!user) {
         // User exists in Clerk but not in our DB yet, create them
         try {
           const clerkUser = await clerkClient.users.getUser(req.auth.userId);
-          
+
           // Find primary email
           const primaryEmail = clerkUser.emailAddresses.find(
-            email => email.id === clerkUser.primaryEmailAddressId
+            (email) => email.id === clerkUser.primaryEmailAddressId,
           )?.emailAddress;
-          
+
           if (!primaryEmail) {
             return res.status(400).json({ message: "User email not found" });
           }
-          
+
           // Create user in our database
           const newUser = await storage.createUser({
             clerkId: req.auth.userId,
             email: primaryEmail,
-            username: clerkUser.username || `user-${clerkUser.id.substring(0, 8)}`
+            username:
+              clerkUser.username || `user-${clerkUser.id.substring(0, 8)}`,
           });
-          
+
           return res.json({
             id: newUser.id,
             email: newUser.email,
             username: newUser.username,
             isSubscribed: !!newUser.stripeCustomerId,
-            subscriptionStatus: newUser.subscriptionStatus
+            subscriptionStatus: newUser.subscriptionStatus,
           });
         } catch (error) {
           console.error("Error creating user from Clerk:", error);
           return res.status(500).json({ message: "Failed to create user" });
         }
       }
-      
+
       // Return user info
       res.json({
         id: user.id,
         email: user.email,
         username: user.username,
         isSubscribed: !!user.stripeCustomerId,
-        subscriptionStatus: user.subscriptionStatus
+        subscriptionStatus: user.subscriptionStatus,
       });
     } catch (error) {
       console.error("Error getting user:", error);
       res.status(500).json({ message: "Failed to get user information" });
     }
   });
-  
+
   // Subscription routes
   app.post("/api/subscription/checkout", async (req, res) => {
     try {
@@ -82,82 +83,95 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!req.auth.userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
-      
+
       // Get user from our database
       const user = await storage.getUserByClerkId(req.auth.userId);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
-      
+
       const session = await stripeService.createCheckoutSession(user);
-      
+
       // Update user with Stripe customer ID if this is their first checkout
       if (!user.stripeCustomerId && session.customer) {
-        await storage.updateStripeCustomerId(user.id, session.customer as string);
+        await storage.updateStripeCustomerId(
+          user.id,
+          session.customer as string,
+        );
       }
-      
+
       res.json({ url: session.url });
     } catch (error) {
       console.error("Error creating checkout session:", error);
       res.status(500).json({ message: "Failed to create checkout session" });
     }
   });
-  
+
   app.post("/api/subscription/portal", async (req, res) => {
     try {
       // Check authentication with Clerk
       if (!req.auth.userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
-      
+
       // Get user from our database
       const user = await storage.getUserByClerkId(req.auth.userId);
       if (!user || !user.stripeCustomerId) {
-        return res.status(404).json({ message: "User not found or no subscription" });
+        return res
+          .status(404)
+          .json({ message: "User not found or no subscription" });
       }
-      
-      const session = await stripeService.createCustomerPortalSession(user.stripeCustomerId);
-      
+
+      const session = await stripeService.createCustomerPortalSession(
+        user.stripeCustomerId,
+      );
+
       res.json({ url: session.url });
     } catch (error) {
       console.error("Error creating customer portal session:", error);
-      res.status(500).json({ message: "Failed to create customer portal session" });
+      res
+        .status(500)
+        .json({ message: "Failed to create customer portal session" });
     }
   });
-  
+
   // Stripe webhook handler
   app.post("/api/webhook", async (req, res) => {
-    const signature = req.headers['stripe-signature'] as string;
-    
+    const signature = req.headers["stripe-signature"] as string;
+
     if (!stripe || !stripeWebhookSecret) {
       return res.status(500).json({ message: "Stripe not configured" });
     }
-    
+
     try {
       const event = stripe.webhooks.constructEvent(
         req.body,
         signature,
-        stripeWebhookSecret
+        stripeWebhookSecret,
       );
-      
+
       const result = await stripeService.handleWebhookEvent(event);
-      
+
       if (result) {
-        if (result.type === 'subscription.created') {
+        if (result.type === "subscription.created") {
           // Find user by Stripe customer ID
-          const user = await storage.getUserByStripeCustomerId(result.customerId);
-          
+          const user = await storage.getUserByStripeCustomerId(
+            result.customerId,
+          );
+
           if (user) {
             // Update user subscription status
             await storage.updateUserSubscription(user.id, {
               stripeSubscriptionId: result.subscriptionId,
-              subscriptionStatus: 'active',
+              subscriptionStatus: "active",
             });
           }
-        } else if (result.type === 'subscription.updated') {
+        } else if (result.type === "subscription.updated") {
           // Find user by Stripe customer ID
-          const user = await storage.getUserByStripeCustomerId(result.customerId);
-          
+          const user = await storage.getUserByStripeCustomerId(
+            result.customerId,
+          );
+
           if (user) {
             // Update user subscription status
             await storage.updateUserSubscription(user.id, {
@@ -166,14 +180,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         }
       }
-      
+
       res.json({ received: true });
     } catch (error) {
       console.error("Error handling webhook:", error);
       res.status(400).json({ message: "Webhook error" });
     }
   });
-  
+
   // Protected clip routes
   app.get("/api/clips", async (req, res) => {
     try {
@@ -214,29 +228,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/clips", requireStripeSubscription, async (req, res) => {
     try {
       const validationResult = insertClipSchema.safeParse(req.body);
-      
+
       if (!validationResult.success) {
-        return res.status(400).json({ 
+        return res.status(400).json({
           message: "Invalid clip data",
-          errors: validationResult.error.format() 
+          errors: validationResult.error.format(),
         });
       }
-      
+
       const clipData = validationResult.data;
-      
+
       // Get user from our database
       if (!req.auth.userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
-      
+
       const user = await storage.getUserByClerkId(req.auth.userId);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
-      
+
       // Generate a unique share ID
       const shareId = generateId(12);
-      
+
       // Create clip data with correct types
       const clipToCreate = {
         videoId: clipData.videoId,
@@ -246,11 +260,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         endTime: clipData.endTime,
         includeSubtitles: clipData.includeSubtitles || false,
         shareId,
-        userId: user.id
+        userId: user.id,
       };
-      
+
       const clip = await storage.createClip(clipToCreate);
-      
+
       res.status(201).json(clip);
     } catch (error) {
       console.error("Error creating clip:", error);

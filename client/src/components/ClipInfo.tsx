@@ -8,7 +8,6 @@ interface ClipInfoProps {
   startTime: number;
   endTime: number;
   clipCreated: boolean;
-  shareId?: string;
   onCreateClip: () => void;
   onCopyLink: () => void;
 }
@@ -18,24 +17,11 @@ export default function ClipInfo({
   startTime,
   endTime,
   clipCreated,
-  shareId,
   onCreateClip,
   onCopyLink,
 }: ClipInfoProps) {
   // Calculate clip duration
   const clipDuration = endTime - startTime;
-  
-  // Function to copy shareable link to clipboard
-  const copyShareableLink = () => {
-    // Call the parent handler
-    onCopyLink();
-    
-    // Generate and copy the shareable URL if we have a shareId
-    if (shareId) {
-      const shareableUrl = `${window.location.origin}/share/${shareId}`;
-      navigator.clipboard.writeText(shareableUrl);
-    }
-  };
   
   return (
     <div>
@@ -93,7 +79,7 @@ export default function ClipInfo({
                   <Button 
                     variant="outline"
                     size="sm"
-                    onClick={copyShareableLink}
+                    onClick={onCopyLink}
                     className="text-xs h-8"
                   >
                     <Link className="mr-1.5 h-3.5 w-3.5" />
@@ -104,7 +90,7 @@ export default function ClipInfo({
                 <div className="grid grid-cols-2 gap-3">
                   <Button 
                     variant="outline"
-                    onClick={copyShareableLink}
+                    onClick={onCopyLink}
                     className="justify-center items-center text-sm py-5"
                   >
                     <Link className="mr-2 h-4 w-4" />
