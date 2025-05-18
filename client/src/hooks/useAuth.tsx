@@ -63,11 +63,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (response.ok) {
         const userData = await response.json();
         setUser(userData);
-        
-        // If user is not subscribed, redirect to subscription page
-        if (!userData.isSubscribed) {
-          setLocation('/subscribe');
-        }
+        // Don't redirect here, let the ProtectedRoute component handle redirects
       } else {
         setUser(null);
       }

@@ -49,16 +49,21 @@ export function SubscriptionCheckPage() {
 
           if (response.ok) {
             const userData = await response.json();
+            
+            console.log("Subscription check: User data received", userData);
 
-            // Check if user has a subscription
-            if (userData.isSubscribed) {
+            // Check if user has a subscription (has a Stripe customer ID)
+            if (userData.stripeCustomerId) {
+              console.log("User has subscription, redirecting to create page");
               // User has a subscription, redirect to create page
               setLocation("/create");
             } else {
+              console.log("User has no subscription, redirecting to subscribe page");
               // User doesn't have a subscription, redirect to subscribe page
               setLocation("/subscribe");
             }
           } else {
+            console.log("User not found in database, redirecting to subscribe");
             // User exists in Clerk but not in our database, redirect to subscribe
             setLocation("/subscribe");
           }
@@ -70,6 +75,7 @@ export function SubscriptionCheckPage() {
               "Failed to check subscription status. Please try again.",
             variant: "destructive",
           });
+          // On error, safer to just go to subscription page
           setLocation("/subscribe");
         }
       };
@@ -77,6 +83,7 @@ export function SubscriptionCheckPage() {
       // Run the check
       checkSubscription();
     } else if (!isSignedIn) {
+      console.log("Not signed in with Clerk, redirecting to login");
       // Not signed in, redirect to login
       setLocation("/login");
     }
