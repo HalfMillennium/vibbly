@@ -47,7 +47,7 @@ export default function Landing() {
                 asChild
                 className="bg-primary hover:bg-primary/90 text-white rounded-full"
               >
-                <Link to="/signup">Sign Up</Link>
+                <Link to="/register">Sign up</Link>
               </Button>
             </div>
           </div>
@@ -60,10 +60,9 @@ export default function Landing() {
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 leading-tight mb-6">
             Create and share YouTube video clips in seconds
           </h1>
-
+          
           <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
-            vibbly lets you easily create, customize, and share clips from any
-            YouTube video with just a few clicks.
+            vibbly lets you easily create, customize, and share clips from any YouTube video with just a few clicks.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -83,14 +82,14 @@ export default function Landing() {
           </div>
         </div>
       </section>
-
+      
       {/* Simple feature section */}
       <section className="pb-20 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 pt-10 sm:px-6 lg:px-8 text-center">
           <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 mb-8">
             How It Works
           </h2>
-
+          
           <div className="flex flex-col md:flex-row justify-between gap-8 text-center">
             <div className="flex-1 p-6 rounded-lg">
               <div className="flex justify-center mb-4">
@@ -99,11 +98,9 @@ export default function Landing() {
                 </div>
               </div>
               <h3 className="text-xl font-medium mb-2">Paste YouTube Link</h3>
-              <p className="text-gray-600">
-                Simply paste any YouTube video URL to get started
-              </p>
+              <p className="text-gray-600">Simply paste any YouTube video URL to get started</p>
             </div>
-
+            
             <div className="flex-1 p-6 rounded-lg">
               <div className="flex justify-center mb-4">
                 <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
@@ -111,11 +108,9 @@ export default function Landing() {
                 </div>
               </div>
               <h3 className="text-xl font-medium mb-2">Select Timestamps</h3>
-              <p className="text-gray-600">
-                Choose the start and end times for your perfect clip
-              </p>
+              <p className="text-gray-600">Choose the start and end times for your perfect clip</p>
             </div>
-
+            
             <div className="flex-1 p-6 rounded-lg">
               <div className="flex justify-center mb-4">
                 <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
@@ -123,9 +118,7 @@ export default function Landing() {
                 </div>
               </div>
               <h3 className="text-xl font-medium mb-2">Share Your Clip</h3>
-              <p className="text-gray-600">
-                Get a shareable link for your clip in seconds
-              </p>
+              <p className="text-gray-600">Get a shareable link for your clip in seconds</p>
             </div>
           </div>
         </div>
