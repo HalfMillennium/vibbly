@@ -1,6 +1,19 @@
 import { Request, Response, NextFunction } from 'express';
 import { storage } from '../storage';
 
+// Define the extended request interface
+declare global {
+  namespace Express {
+    interface Request {
+      auth: {
+        userId: string | null;
+        sessionId: string | null;
+        getToken: () => Promise<string | null>;
+      }
+    }
+  }
+}
+
 // Middleware to check if the user has an active Stripe subscription
 export const requireStripeSubscription = async (req: Request, res: Response, next: NextFunction) => {
   try {

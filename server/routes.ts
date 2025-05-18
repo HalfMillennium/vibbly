@@ -211,7 +211,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/clips", isAuthenticated, hasActiveSubscription, async (req, res) => {
+  app.post("/api/clips", requireStripeSubscription, async (req, res) => {
     try {
       const validationResult = insertClipSchema.safeParse(req.body);
       
@@ -223,16 +223,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const clipData = validationResult.data;
-      const userId = req.session?.userId;
+      
+      // Get user from our database
+      if (!req.auth.userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      
+      const user = await storage.getUserByClerkId(req.auth.userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
       
       // Generate a unique share ID
       const shareId = generateId(12);
       
-      const clip = await storage.createClip({
-        ...clipData,
+      // Create clip data with correct types
+      const clipToCreate = {
+        videoId: clipData.videoId,
+        videoTitle: clipData.videoTitle,
+        clipTitle: clipData.clipTitle,
+        startTime: clipData.startTime,
+        endTime: clipData.endTime,
+        includeSubtitles: clipData.includeSubtitles || false,
         shareId,
-        userId: userId as number
-      });
+        userId: user.id
+      };
+      
+      const clip = await storage.createClip(clipToCreate);
       
       res.status(201).json(clip);
     } catch (error) {

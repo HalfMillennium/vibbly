@@ -78,7 +78,25 @@ export const storage = {
     return await db.select().from(clips).where(eq(clips.userId, userId));
   },
 
-  async createClip(data: Partial<Clip>): Promise<Clip> {
+  async getAllClips(): Promise<Clip[]> {
+    return await db.select().from(clips);
+  },
+  
+  async getClip(id: number): Promise<Clip | undefined> {
+    const results = await db.select().from(clips).where(eq(clips.id, id));
+    return results[0];
+  },
+
+  async createClip(data: {
+    videoId: string;
+    videoTitle: string;
+    clipTitle: string;
+    startTime: number;
+    endTime: number;
+    includeSubtitles?: boolean;
+    shareId: string;
+    userId?: number;
+  }): Promise<Clip> {
     const results = await db.insert(clips).values(data).returning();
     return results[0];
   },

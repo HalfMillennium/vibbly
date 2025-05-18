@@ -36,8 +36,8 @@ export async function createCheckoutSession(user: User) {
         price_data: {
           currency: 'usd',
           product_data: {
-            name: 'ClipCraft Premium',
-            description: 'Unlimited access to ClipCraft video clipping features',
+            name: 'vibbly Premium',
+            description: 'Unlimited access to vibbly video clipping features',
           },
           unit_amount: 999, // $9.99 in cents
           recurring: {
