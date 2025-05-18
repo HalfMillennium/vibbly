@@ -44,6 +44,7 @@ function Router() {
           <SubscriptionCancel />
         </ProtectedRoute>
       </Route>
+      <Route path="/share/:shareId" component={SharedClip} />
       <Route component={NotFound} />
     </Switch>
   );

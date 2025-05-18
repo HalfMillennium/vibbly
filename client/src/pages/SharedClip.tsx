@@ -47,6 +47,31 @@ export default function SharedClip() {
       description: 'The link has been copied to your clipboard.',
     });
   };
+  
+  // Native mobile share
+  const nativeShare = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: clip.clipTitle,
+          text: `Check out this clip: ${clip.clipTitle}`,
+          url: window.location.href,
+        });
+      } else {
+        // Fallback to clipboard if native sharing not available
+        copyShareLink();
+      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+      toast({
+        title: 'Sharing failed',
+        description: 'Could not share the clip. The link has been copied instead.',
+        variant: 'destructive',
+      });
+      // Fallback to clipboard
+      copyShareLink();
+    }
+  };
 
   if (isLoading) {
     return (
@@ -110,11 +135,20 @@ export default function SharedClip() {
           </div>
         </div>
         
-        <div className="flex justify-end w-full mt-4">
+        <div className="flex justify-end w-full mt-4 gap-2">
           <Button 
             variant="outline" 
             className="flex items-center space-x-2"
             onClick={copyShareLink}
+          >
+            <Link className="h-4 w-4" />
+            <span>Copy Link</span>
+          </Button>
+          
+          <Button 
+            variant="primary" 
+            className="flex items-center space-x-2 bg-primary text-white hover:bg-primary/90"
+            onClick={nativeShare}
           >
             <Share2 className="h-4 w-4" />
             <span>Share</span>
