@@ -8,7 +8,7 @@ import AppHeader from '@/components/AppHeader';
 import AppFooter from '@/components/AppFooter';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, Share2 } from 'lucide-react';
+import { Loader2, Share2, Link as LinkIcon } from 'lucide-react';
 import { formatTime } from '@/lib/utils';
 
 export default function SharedClip() {
@@ -141,12 +141,12 @@ export default function SharedClip() {
             className="flex items-center space-x-2"
             onClick={copyShareLink}
           >
-            <Link className="h-4 w-4" />
+            <LinkIcon className="h-4 w-4" />
             <span>Copy Link</span>
           </Button>
           
           <Button 
-            variant="primary" 
+            variant="default" 
             className="flex items-center space-x-2 bg-primary text-white hover:bg-primary/90"
             onClick={nativeShare}
           >

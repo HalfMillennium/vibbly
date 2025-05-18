@@ -12,6 +12,7 @@ import Landing from "@/pages/Landing";
 import { SignInPage, SignUpPage, SubscriptionCheckPage } from "@/components/ClerkAuthComponents";
 import ResetPassword from "@/pages/ResetPassword";
 import SharedClip from "@/pages/SharedClip";
+import VerificationSuccess from "@/pages/VerificationSuccess";
 import Subscribe from "@/pages/Subscribe";
 import SubscriptionSuccess from "@/pages/SubscriptionSuccess";
 import SubscriptionCancel from "@/pages/SubscriptionCancel";
@@ -29,6 +30,7 @@ function Router() {
       <Route path="/signup" component={SignUpPage} />
       <Route path="/subscription-check" component={SubscriptionCheckPage} />
       <Route path="/reset-password" component={ResetPassword} />
+      <Route path="/verification-success" component={VerificationSuccess} />
       <Route path="/subscribe">
         <ProtectedRoute requireSubscription={false}>
           <Subscribe />

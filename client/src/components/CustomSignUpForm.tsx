@@ -117,8 +117,8 @@ export default function CustomSignUpForm() {
           description: 'Your account has been verified. You can now subscribe.',
         });
         
-        // Redirect to subscription check page
-        setLocation('/subscription-check');
+        // Redirect to verification success page
+        setLocation('/verification-success');
       } else {
         // If additional verification steps are needed
         toast({
