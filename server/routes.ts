@@ -11,8 +11,8 @@ import { clerkClient } from "@clerk/clerk-sdk-node";
 // Create Stripe webhook instance with secret
 const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
 let stripe: Stripe | null = null;
-if (process.env.STRIPE_SECRET_KEY) {
-  stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+if (process.env.STRIPE_TEST_SECRET) {
+  stripe = new Stripe(process.env.STRIPE_TEST_SECRET);
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {

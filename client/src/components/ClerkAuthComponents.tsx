@@ -12,7 +12,7 @@ export function SignInPage() {
       <AppHeader />
       <main className="flex-1 flex justify-center items-center px-4 py-8">
         <div className="w-full max-w-md">
-          <SignIn redirectUrl="/subscription-check" />
+          <SignIn />
         </div>
       </main>
       <AppFooter />
@@ -26,7 +26,7 @@ export function SignUpPage() {
       <AppHeader />
       <main className="flex-1 flex justify-center items-center px-4 py-8">
         <div className="w-full max-w-md">
-          <SignUp redirectUrl="/subscription-check" />
+          <SignUp />
         </div>
       </main>
       <AppFooter />
@@ -44,14 +44,14 @@ export function SubscriptionCheckPage() {
   useEffect(() => {
     // Avoid multiple checks
     if (isChecking) return;
-    
+
     // Wait for Clerk to load
     if (!isLoaded) return;
 
     if (isSignedIn && user) {
       // Mark as checking to prevent multiple API calls
       setIsChecking(true);
-      
+
       // Sync with our backend
       const checkSubscription = async () => {
         try {
@@ -60,7 +60,7 @@ export function SubscriptionCheckPage() {
 
           if (response.ok) {
             const userData = await response.json();
-            
+
             console.log("Subscription check: User data received", userData);
 
             // Check if user has a subscription (has a Stripe customer ID)
@@ -69,7 +69,9 @@ export function SubscriptionCheckPage() {
               // User has a subscription, redirect to create page
               window.location.href = "/create"; // Use direct navigation instead of wouter
             } else {
-              console.log("User has no subscription, redirecting to subscribe page");
+              console.log(
+                "User has no subscription, redirecting to subscribe page",
+              );
               // User doesn't have a subscription, redirect to subscribe page
               window.location.href = "/subscribe"; // Use direct navigation instead of wouter
             }
