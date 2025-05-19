@@ -1,11 +1,11 @@
 import Stripe from 'stripe';
 import { User } from '@shared/schema';
 
-if (!process.env.STRIPE_TEST_SECRET) {
-  throw new Error('Missing STRIPE_TEST_SECRET environment variable');
+if (!process.env.STRIPE_SECRET_KEY) {
+  throw new Error('Missing STRIPE_SECRET_KEY environment variable');
 }
 
-const stripe = new Stripe(process.env.STRIPE_TEST_SECRET);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // Define the URL of your frontend application
 const APP_URL = process.env.APP_URL || 'http://localhost:5000';
