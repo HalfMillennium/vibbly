@@ -39,6 +39,22 @@ export function SubscriptionCheckPage() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [isChecking, setIsChecking] = useState(false);
+  const [redirectAttempts, setRedirectAttempts] = useState(0);
+
+  // Store last path in sessionStorage to prevent infinite loops
+  useEffect(() => {
+    const currentPath = window.location.pathname;
+    const lastPath = sessionStorage.getItem('lastPath');
+    
+    if (lastPath === '/create' && currentPath === '/subscription-check') {
+      // If we're caught in a loop, force redirect to /create
+      console.log("Breaking potential redirect loop");
+      window.location.href = "/create";
+      return;
+    }
+    
+    sessionStorage.setItem('lastPath', currentPath);
+  }, []);
 
   // Check subscription status when user is signed in
   useEffect(() => {
@@ -63,22 +79,21 @@ export function SubscriptionCheckPage() {
 
             console.log("Subscription check: User data received", userData);
 
-            // Check if user has a subscription (has a Stripe customer ID)
-            if (!!userData.stripeCustomerId) {
-              console.log("User has subscription, redirecting to create page");
-              // User has a subscription, redirect to create page
-              window.location.href = "/create"; // Use direct navigation instead of wouter
+            // If user has a Stripe customer ID, consider them subscribed
+            // regardless of status field
+            if (userData.stripeCustomerId) {
+              console.log("User has customer ID, redirecting to create page");
+              // We'll use setLocation instead of direct navigation
+              setLocation("/create");
             } else {
               console.log(
                 "User has no subscription, redirecting to subscribe page",
               );
-              // User doesn't have a subscription, redirect to subscribe page
-              window.location.href = "/subscribe"; // Use direct navigation instead of wouter
+              setLocation("/subscribe");
             }
           } else {
             console.log("User not found in database, redirecting to subscribe");
-            // User exists in Clerk but not in our database, redirect to subscribe
-            window.location.href = "/subscribe"; // Use direct navigation instead of wouter
+            setLocation("/subscribe");
           }
         } catch (error) {
           console.error("Error checking subscription:", error);
@@ -88,8 +103,10 @@ export function SubscriptionCheckPage() {
               "Failed to check subscription status. Please try again.",
             variant: "destructive",
           });
-          // On error, safer to just go to subscription page
-          window.location.href = "/subscribe"; // Use direct navigation instead of wouter
+          // On error, direct to subscribe page
+          setLocation("/subscribe");
+        } finally {
+          setIsChecking(false);
         }
       };
 
@@ -97,8 +114,7 @@ export function SubscriptionCheckPage() {
       checkSubscription();
     } else if (isLoaded && !isSignedIn) {
       console.log("Not signed in with Clerk, redirecting to login");
-      // Not signed in, redirect to login
-      window.location.href = "/login"; // Use direct navigation instead of wouter
+      setLocation("/login");
     }
   }, [isSignedIn, user, isLoaded, setLocation, toast, isChecking]);
 
