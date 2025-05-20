@@ -13,6 +13,9 @@ import { SignInPage, SignUpPage, SubscriptionCheckPage } from "@/components/Cler
 import Subscribe from "@/pages/Subscribe";
 import SubscriptionSuccess from "@/pages/SubscriptionSuccess";
 import SubscriptionCancel from "@/pages/SubscriptionCancel";
+import Pricing from "@/pages/Pricing";
+import Features from "@/pages/Features";
+import Contact from "@/pages/Contact";
 
 function Router() {
   return (
@@ -41,6 +44,10 @@ function Router() {
           <SubscriptionCancel />
         </ProtectedRoute>
       </Route>
+      {/* New pages */}
+      <Route path="/pricing" component={Pricing} />
+      <Route path="/features" component={Features} />
+      <Route path="/contact" component={Contact} />
       <Route component={NotFound} />
     </Switch>
   );
