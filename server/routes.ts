@@ -54,6 +54,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             email: newUser.email,
             username: newUser.username,
             isSubscribed: !!newUser.stripeCustomerId,
+            stripeCustomerId: newUser.stripeCustomerId,
             subscriptionStatus: newUser.subscriptionStatus,
           });
         } catch (error) {
@@ -68,6 +69,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         email: user.email,
         username: user.username,
         isSubscribed: !!user.stripeCustomerId,
+        stripeCustomerId: user.stripeCustomerId,
         subscriptionStatus: user.subscriptionStatus,
       });
     } catch (error) {
