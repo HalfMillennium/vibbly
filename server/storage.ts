@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
-import { users, clips, type User, type Clip } from "@shared/schema";
+import { users, clips, userMessages, type User, type Clip, type UserMessage, type InsertUserMessage } from "@shared/schema";
 import { eq } from "drizzle-orm";
 
 if (!process.env.DATABASE_URL) {
@@ -104,5 +104,24 @@ export const storage = {
   async getClipByShareId(shareId: string): Promise<Clip | undefined> {
     const results = await db.select().from(clips).where(eq(clips.shareId, shareId));
     return results[0];
+  },
+
+  // User message methods
+  async createUserMessage(data: InsertUserMessage & { userId?: number }): Promise<UserMessage> {
+    const results = await db.insert(userMessages).values(data).returning();
+    return results[0];
+  },
+
+  async getUserMessages(): Promise<UserMessage[]> {
+    return await db.select().from(userMessages);
+  },
+
+  async getUserMessageById(id: number): Promise<UserMessage | undefined> {
+    const results = await db.select().from(userMessages).where(eq(userMessages.id, id));
+    return results[0];
+  },
+
+  async getUserMessagesByUserId(userId: number): Promise<UserMessage[]> {
+    return await db.select().from(userMessages).where(eq(userMessages.userId, userId));
   }
 };

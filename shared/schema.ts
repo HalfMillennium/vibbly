@@ -33,6 +33,15 @@ export const clips = pgTable("clips", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const userMessages = pgTable("user_messages", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  message: text("message").notNull(),
+  userId: integer("user_id").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
   createdAt: true,
@@ -46,7 +55,15 @@ export const insertClipSchema = createInsertSchema(clips).omit({
   userId: true,
 });
 
+export const insertUserMessageSchema = createInsertSchema(userMessages).omit({
+  id: true,
+  createdAt: true,
+  userId: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type InsertClip = z.infer<typeof insertClipSchema>;
 export type Clip = typeof clips.$inferSelect;
+export type InsertUserMessage = z.infer<typeof insertUserMessageSchema>;
+export type UserMessage = typeof userMessages.$inferSelect;

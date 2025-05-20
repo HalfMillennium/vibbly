@@ -1,7 +1,7 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertClipSchema } from "@shared/schema";
+import { insertClipSchema, insertUserMessageSchema } from "@shared/schema";
 import { generateId } from "../client/src/lib/utils";
 import { requireStripeSubscription } from "./middleware/clerk-routes";
 import * as stripeService from "./services/stripe";
@@ -271,6 +271,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error creating clip:", error);
       res.status(500).json({ message: "Failed to create clip" });
+    }
+  });
+
+  // User message route
+  app.post("/api/messages", async (req, res) => {
+    try {
+      const validationResult = insertUserMessageSchema.safeParse(req.body);
+
+      if (!validationResult.success) {
+        return res.status(400).json({
+          message: "Invalid message data",
+          errors: validationResult.error.format(),
+        });
+      }
+
+      const messageData = validationResult.data;
+      
+      // If user is authenticated, link message to user account
+      let userId: number | undefined = undefined;
+      
+      if (req.auth.userId) {
+        const user = await storage.getUserByClerkId(req.auth.userId);
+        if (user) {
+          userId = user.id;
+        }
+      }
+
+      const message = await storage.createUserMessage({
+        ...messageData,
+        userId
+      });
+
+      res.status(201).json({ success: true, messageId: message.id });
+    } catch (error) {
+      console.error("Error creating message:", error);
+      res.status(500).json({ message: "Failed to submit message" });
     }
   });
 
