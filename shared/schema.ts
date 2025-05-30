@@ -2,24 +2,6 @@ import { pgTable, text, serial, integer, boolean, timestamp } from "drizzle-orm/
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
-  email: text("email").notNull().unique(),
-  username: text("username").notNull(),
-  clerkId: text("clerk_id").notNull().unique(),
-  stripeCustomerId: text("stripe_customer_id").unique(),
-  stripeSubscriptionId: text("stripe_subscription_id"),
-  subscriptionStatus: text("subscription_status").default("inactive"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-export const sessions = pgTable("sessions", {
-  sid: text("sid").primaryKey(),
-  sess: text("sess").notNull(),
-  expire: timestamp("expire").notNull(),
-});
-
 export const clips = pgTable("clips", {
   id: serial("id").primaryKey(),
   videoId: text("video_id").notNull(),
@@ -29,41 +11,14 @@ export const clips = pgTable("clips", {
   endTime: integer("end_time").notNull(),
   includeSubtitles: boolean("include_subtitles").default(false),
   shareId: text("share_id").notNull().unique(),
-  userId: integer("user_id").references(() => users.id),
   createdAt: timestamp("created_at").defaultNow(),
-});
-
-export const userMessages = pgTable("user_messages", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  email: text("email").notNull(),
-  message: text("message").notNull(),
-  userId: integer("user_id").references(() => users.id),
-  createdAt: timestamp("created_at").defaultNow(),
-});
-
-export const insertUserSchema = createInsertSchema(users).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
 });
 
 export const insertClipSchema = createInsertSchema(clips).omit({
   id: true,
   createdAt: true,
   shareId: true,
-  userId: true,
 });
 
-export const insertUserMessageSchema = createInsertSchema(userMessages).omit({
-  id: true,
-  createdAt: true,
-  userId: true,
-});
-
-export type InsertUser = z.infer<typeof insertUserSchema>;
-export type User = typeof users.$inferSelect;
 export type InsertClip = z.infer<typeof insertClipSchema>;
 export type Clip = typeof clips.$inferSelect;
-export type InsertUserMessage = z.infer<typeof insertUserMessageSchema>;
-export type UserMessage = typeof userMessages.$inferSelect;

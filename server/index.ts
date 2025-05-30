@@ -1,52 +1,10 @@
 import express, { type Request, Response, NextFunction } from "express";
-import session from "express-session";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
-import { storage } from "./storage";
-import { ClerkExpressWithAuth } from '@clerk/clerk-sdk-node';
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
-// Configure session middleware
-const SESSION_SECRET = process.env.SESSION_SECRET || "s3cr3t_k3y_f0r_d3v"; // Should be changed in production
-app.use(session({
-  secret: SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: process.env.NODE_ENV === "production", // Use secure cookies in production
-    httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours
-  }
-}));
-
-// Authentication middleware
-declare module "express-session" {
-  interface SessionData {
-    userId: number;
-    userEmail: string;
-  }
-}
-
-// Add Clerk authentication middleware
-app.use(ClerkExpressWithAuth());
-
-// This middleware integrates Clerk auth with our database
-app.use(async (req: Request, res, next) => {
-  if (req.auth && req.auth.userId) {
-    try {
-      const user = await storage.getUserByClerkId(req.auth.userId);
-      if (user) {
-        (req as any).user = user;
-      }
-    } catch (error) {
-      console.error("Error fetching user from Clerk ID:", error);
-    }
-  }
-  next();
-});
 
 app.use((req, res, next) => {
   const start = Date.now();
