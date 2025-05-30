@@ -38,35 +38,18 @@ export function SubscriptionCheckPage() {
   const { isSignedIn, user, isLoaded } = useUser();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const [isChecking, setIsChecking] = useState(false);
-  const [redirectAttempts, setRedirectAttempts] = useState(0);
-
-  // Store last path in sessionStorage to prevent infinite loops
-  useEffect(() => {
-    const currentPath = window.location.pathname;
-    const lastPath = sessionStorage.getItem('lastPath');
-    
-    if (lastPath === '/create' && currentPath === '/subscription-check') {
-      // If we're caught in a loop, force redirect to /create
-      console.log("Breaking potential redirect loop");
-      window.location.href = "/create";
-      return;
-    }
-    
-    sessionStorage.setItem('lastPath', currentPath);
-  }, []);
+  const [hasChecked, setHasChecked] = useState(false);
 
   // Check subscription status when user is signed in
   useEffect(() => {
-    // Avoid multiple checks
-    if (isChecking) return;
+    // Only run once per page load
+    if (hasChecked) return;
 
     // Wait for Clerk to load
     if (!isLoaded) return;
 
     if (isSignedIn && user) {
-      // Mark as checking to prevent multiple API calls
-      setIsChecking(true);
+      setHasChecked(true);
 
       // Sync with our backend
       const checkSubscription = async () => {
@@ -76,47 +59,39 @@ export function SubscriptionCheckPage() {
 
           if (response.ok) {
             const userData = await response.json();
-
             console.log("Subscription check: User data received", userData);
 
             // If user has a Stripe customer ID, consider them subscribed
-            // regardless of status field
             if (userData.stripeCustomerId) {
               console.log("User has customer ID, redirecting to create page");
-              // We'll use setLocation instead of direct navigation
-              setLocation("/create");
+              // Use a small delay to prevent rapid redirects
+              setTimeout(() => setLocation("/create"), 100);
             } else {
-              console.log(
-                "User has no subscription, redirecting to subscribe page",
-              );
-              setLocation("/subscribe");
+              console.log("User has no subscription, redirecting to subscribe page");
+              setTimeout(() => setLocation("/subscribe"), 100);
             }
           } else {
             console.log("User not found in database, redirecting to subscribe");
-            setLocation("/subscribe");
+            setTimeout(() => setLocation("/subscribe"), 100);
           }
         } catch (error) {
           console.error("Error checking subscription:", error);
           toast({
             title: "Error",
-            description:
-              "Failed to check subscription status. Please try again.",
+            description: "Failed to check subscription status. Please try again.",
             variant: "destructive",
           });
-          // On error, direct to subscribe page
-          setLocation("/subscribe");
-        } finally {
-          setIsChecking(false);
+          setTimeout(() => setLocation("/subscribe"), 100);
         }
       };
 
-      // Run the check
       checkSubscription();
     } else if (isLoaded && !isSignedIn) {
       console.log("Not signed in with Clerk, redirecting to login");
-      setLocation("/login");
+      setHasChecked(true);
+      setTimeout(() => setLocation("/login"), 100);
     }
-  }, [isSignedIn, user, isLoaded, setLocation, toast, isChecking]);
+  }, [isSignedIn, user, isLoaded, setLocation, toast, hasChecked]);
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-background to-muted">

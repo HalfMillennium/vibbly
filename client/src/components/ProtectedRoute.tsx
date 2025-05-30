@@ -28,18 +28,18 @@ export default function ProtectedRoute({
         // Not signed in with Clerk, redirect to login
         console.log("Protected route: not signed in, redirecting to login");
         setHasRedirected(true);
-        setLocation('/login');
+        setTimeout(() => setLocation('/login'), 50);
       } else if (!isAuthenticated) {
         // Signed in with Clerk but not in our database yet,
         // go to subscription check to sync the accounts
         console.log("Protected route: signed in but not authenticated in database, redirecting to subscription check");
         setHasRedirected(true);
-        setLocation('/subscription-check');
+        setTimeout(() => setLocation('/subscription-check'), 50);
       } else if (requireSubscription && !isSubscribed) {
         // Authenticated but not subscribed, redirect to subscription page
         console.log("Protected route: authenticated but not subscribed, redirecting to subscribe");
         setHasRedirected(true);
-        setLocation('/subscribe');
+        setTimeout(() => setLocation('/subscribe'), 50);
       }
     }
   }, [isLoading, isClerkLoaded, isSignedIn, isAuthenticated, isSubscribed, requireSubscription, setLocation, hasRedirected]);

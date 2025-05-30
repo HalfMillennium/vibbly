@@ -16,6 +16,7 @@ import SubscriptionCancel from "@/pages/SubscriptionCancel";
 import Pricing from "@/pages/Pricing";
 import Features from "@/pages/Features";
 import Contact from "@/pages/Contact";
+import ClearAuth from "@/pages/ClearAuth";
 
 function Router() {
   return (
@@ -48,6 +49,8 @@ function Router() {
       <Route path="/pricing" component={Pricing} />
       <Route path="/features" component={Features} />
       <Route path="/contact" component={Contact} />
+      {/* Debug route to clear auth state */}
+      <Route path="/clear-auth" component={ClearAuth} />
       <Route component={NotFound} />
     </Switch>
   );
