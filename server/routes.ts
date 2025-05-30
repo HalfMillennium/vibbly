@@ -19,9 +19,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Authentication routes using Clerk
   app.get("/api/auth/me", async (req, res) => {
     try {
-      // Check authentication with Clerk
-      if (!req.auth.userId) {
-        return res.status(401).json({ message: "Authentication required" });
+      // Return null if not authenticated instead of 401 error
+      if (!req.auth || !req.auth.userId) {
+        return res.status(200).json({ user: null, authenticated: false });
       }
 
       // Get user from our database
