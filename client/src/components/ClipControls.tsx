@@ -188,12 +188,11 @@ export default function ClipControls({
   }, [videoDuration, startTime, endTime, onStartTimeChange, onEndTimeChange]);
 
   return (
-    <div className="space-y-4">
-      <Card className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
-        <CardContent className="p-4 md:p-6">
-          <h3 className="text-base font-medium text-gray-800 mb-4">Adjust clip timing</h3>
-          
-          {/* Timeline with visual markers */}
+    <div className="space-y-6">
+      <div className="glass-card p-6 md:p-8">
+        <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-6">Adjust clip timing</h3>
+        
+        {/* Timeline with visual markers */}
           <div className="timeline-container mb-6">
             <div className="timeline-track" ref={trackRef}>
               {/* Selected Area */}
@@ -299,71 +298,68 @@ export default function ClipControls({
               <span className="text-sm">Preview Clip</span>
             </Button>
             
-            <div className="text-sm text-gray-600 font-medium">
-              Duration: <span className="text-gray-900">{formatTime(endTime - startTime)}</span>
+            <div className="text-sm text-gray-600 dark:text-gray-300 font-medium">
+              Duration: <span className="text-gray-900 dark:text-gray-100">{formatTime(endTime - startTime)}</span>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
       
       {/* Advanced Options */}
-      <Card className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
-        <CardContent className="p-4 md:p-6">
-          <button 
-            onClick={() => setAdvancedOptionsOpen(!advancedOptionsOpen)}
-            className="w-full flex items-center justify-between text-left"
-          >
-            <h3 className="text-base font-medium text-gray-800">Additional Options</h3>
-            <span className="text-gray-500">
-              {advancedOptionsOpen ? 
-                <ChevronUp className="h-5 w-5" /> : 
-                <ChevronDown className="h-5 w-5" />
-              }
-            </span>
-          </button>
-          
-          {advancedOptionsOpen && (
-            <div className="space-y-4 mt-4 pt-4 border-t border-gray-100">
-              <div>
-                <Label htmlFor="clip-title" className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Clip Title
-                </Label>
-                <Input 
-                  id="clip-title" 
-                  value={clipTitle}
-                  onChange={(e) => onClipTitleChange(e.target.value)}
-                  className="w-full"
-                  placeholder="Add a title to your clip"
+      <div className="glass-card p-6 md:p-8">
+        <button 
+          onClick={() => setAdvancedOptionsOpen(!advancedOptionsOpen)}
+          className="w-full flex items-center justify-between text-left"
+        >
+          <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200">Additional Options</h3>
+          <span className="text-gray-500 dark:text-gray-400">
+            {advancedOptionsOpen ? 
+              <ChevronUp className="h-5 w-5" /> : 
+              <ChevronDown className="h-5 w-5" />
+            }
+          </span>
+        </button>
+        
+        {advancedOptionsOpen && (
+          <div className="space-y-6 mt-6 pt-6 border-t border-white/20 dark:border-gray-700/50">
+            <div>
+              <Label htmlFor="clip-title" className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-3">
+                Clip Title
+              </Label>
+              <Input 
+                id="clip-title" 
+                value={clipTitle}
+                onChange={(e) => onClipTitleChange(e.target.value)}
+                className="w-full glass-input rounded-2xl"
+                placeholder="Add a title to your clip"
+              />
+            </div>
+            
+            <div className="flex flex-col sm:flex-row sm:items-center sm:gap-8">
+              <div className="flex items-center space-x-3 mb-3 sm:mb-0">
+                <Checkbox 
+                  id="loop-clip" 
+                  checked={loopClip}
+                  onCheckedChange={(checked) => onLoopClipChange(checked as boolean)}
                 />
+                <Label htmlFor="loop-clip" className="text-sm text-gray-700 dark:text-gray-200">
+                  Loop clip in preview
+                </Label>
               </div>
               
-              <div className="flex flex-col sm:flex-row sm:items-center sm:gap-6">
-                <div className="flex items-center space-x-2 mb-2 sm:mb-0">
-                  <Checkbox 
-                    id="loop-clip" 
-                    checked={loopClip}
-                    onCheckedChange={(checked) => onLoopClipChange(checked as boolean)}
-                  />
-                  <Label htmlFor="loop-clip" className="text-sm text-gray-700">
-                    Loop clip in preview
-                  </Label>
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="include-subtitles" 
-                    checked={includeSubtitles}
-                    onCheckedChange={(checked) => onIncludeSubtitlesChange(checked as boolean)}
-                  />
-                  <Label htmlFor="include-subtitles" className="text-sm text-gray-700">
-                    Include subtitles
-                  </Label>
-                </div>
+              <div className="flex items-center space-x-3">
+                <Checkbox 
+                  id="include-subtitles" 
+                  checked={includeSubtitles}
+                  onCheckedChange={(checked) => onIncludeSubtitlesChange(checked as boolean)}
+                />
+                <Label htmlFor="include-subtitles" className="text-sm text-gray-700 dark:text-gray-200">
+                  Include subtitles
+                </Label>
               </div>
             </div>
-          )}
-        </CardContent>
-      </Card>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

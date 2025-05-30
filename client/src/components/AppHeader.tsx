@@ -4,7 +4,7 @@ import { ModeToggle } from "@/components/mode-toggle";
 
 export default function AppHeader() {
   return (
-    <header className="bg-white dark:bg-gray-900 shadow-sm sticky top-0 z-10 border-b dark:border-gray-800">
+    <header className="glass-nav sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
@@ -14,7 +14,7 @@ export default function AppHeader() {
                 <span className="text-primary">Clip</span>Craft
               </h1>
             </div>
-            <span className="ml-2 text-xs bg-primary/10 text-primary rounded-full px-2 py-0.5 hidden sm:inline-block">
+            <span className="ml-2 text-xs bg-primary/20 text-primary rounded-2xl px-3 py-1 hidden sm:inline-block backdrop-blur-sm">
               Beta
             </span>
           </div>
@@ -23,7 +23,7 @@ export default function AppHeader() {
             <Button 
               variant="ghost" 
               size="sm"
-              className="text-gray-600 dark:text-gray-300 hover:text-primary hover:bg-primary/5 hidden sm:flex items-center gap-1.5"
+              className="text-gray-600 dark:text-gray-300 hover:text-primary hover:bg-white/20 dark:hover:bg-white/10 rounded-2xl hidden sm:flex items-center gap-1.5 glass-button"
               title="View Saved Clips"
             >
               <Bookmark className="h-4 w-4" />
@@ -33,7 +33,7 @@ export default function AppHeader() {
             <Button
               variant="ghost"
               size="icon"
-              className="text-gray-600 dark:text-gray-300 hover:text-primary hover:bg-primary/5 sm:hidden"
+              className="text-gray-600 dark:text-gray-300 hover:text-primary hover:bg-white/20 dark:hover:bg-white/10 rounded-2xl sm:hidden glass-button"
               title="View Saved Clips"
             >
               <Bookmark className="h-4 w-4" />
@@ -44,7 +44,7 @@ export default function AppHeader() {
             <Button 
               variant="outline"
               size="sm"
-              className="flex items-center gap-1.5 text-sm bg-white dark:bg-gray-800 dark:text-white"
+              className="flex items-center gap-1.5 text-sm glass-button rounded-2xl border-white/30 dark:border-white/20"
             >
               <User className="h-4 w-4" />
               <span className="hidden sm:inline">Sign in</span>
