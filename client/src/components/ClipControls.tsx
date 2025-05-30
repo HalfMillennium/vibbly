@@ -193,7 +193,7 @@ export default function ClipControls({
         <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-6">Adjust clip timing</h3>
         
         {/* Timeline with visual markers */}
-          <div className="timeline-container mb-6">
+        <div className="timeline-container mb-6">
             <div className="timeline-track" ref={trackRef}>
               {/* Selected Area */}
               <div 
