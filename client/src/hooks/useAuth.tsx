@@ -44,15 +44,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Check if user has active subscription
   const isSubscribed = isAuthenticated && !!user?.stripeCustomerId;
 
-  // Check auth status when Clerk user changes
+  // No automatic auth checking - user must manually trigger authentication
   useEffect(() => {
-    if (isSignedIn && clerkUser) {
-      checkAuthStatus();
-    } else {
-      setUser(null);
-      setIsLoading(false);
-    }
-  }, [isSignedIn, clerkUser]);
+    setUser(null);
+    setIsLoading(false);
+  }, []);
 
   // Function to check authentication status
   const checkAuthStatus = async () => {

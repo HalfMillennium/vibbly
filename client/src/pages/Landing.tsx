@@ -1,6 +1,5 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Scissors } from "lucide-react";
 import appLogo from "../assets/vibbly_logo.png";
 
 export default function Landing() {

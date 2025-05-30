@@ -9,7 +9,11 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import Landing from "@/pages/Landing";
-import { SignInPage, SignUpPage, SubscriptionCheckPage } from "@/components/ClerkAuthComponents";
+import {
+  SignInPage,
+  SignUpPage,
+  SubscriptionCheckPage,
+} from "@/components/ClerkAuthComponents";
 import Subscribe from "@/pages/Subscribe";
 import SubscriptionSuccess from "@/pages/SubscriptionSuccess";
 import SubscriptionCancel from "@/pages/SubscriptionCancel";

@@ -1,68 +1,72 @@
-import { ReactNode, useEffect, useState } from 'react';
-import { useLocation } from 'wouter';
-import { useAuth } from '@/hooks/useAuth';
-import { Loader2 } from 'lucide-react';
-import { useUser } from '@clerk/clerk-react';
+import { ReactNode } from "react";
+import { Link } from "wouter";
+import { useUser } from "@clerk/clerk-react";
+import { Button } from "@/components/ui/button";
 
 interface ProtectedRouteProps {
   children: ReactNode;
   requireSubscription?: boolean;
 }
 
-export default function ProtectedRoute({ 
-  children, 
-  requireSubscription = true 
+export default function ProtectedRoute({
+  children,
+  requireSubscription = true,
 }: ProtectedRouteProps) {
-  const { isAuthenticated, isSubscribed, isLoading } = useAuth();
-  const { isSignedIn, isLoaded: isClerkLoaded } = useUser();
-  const [, setLocation] = useLocation();
-  const [hasRedirected, setHasRedirected] = useState(false);
+  const { isSignedIn, isLoaded } = useUser();
 
-  useEffect(() => {
-    // Prevent multiple redirects by tracking if we've already redirected
-    if (hasRedirected) return;
-
-    // Wait for both Clerk and our custom auth hook to load
-    if (!isLoading && isClerkLoaded) {
-      if (!isSignedIn) {
-        // Not signed in with Clerk, redirect to login
-        console.log("Protected route: not signed in, redirecting to login");
-        setHasRedirected(true);
-        setTimeout(() => setLocation('/login'), 50);
-      } else if (!isAuthenticated) {
-        // Signed in with Clerk but not in our database yet,
-        // go to subscription check to sync the accounts
-        console.log("Protected route: signed in but not authenticated in database, redirecting to subscription check");
-        setHasRedirected(true);
-        setTimeout(() => setLocation('/subscription-check'), 50);
-      } else if (requireSubscription && !isSubscribed) {
-        // Authenticated but not subscribed, redirect to subscription page
-        console.log("Protected route: authenticated but not subscribed, redirecting to subscribe");
-        setHasRedirected(true);
-        setTimeout(() => setLocation('/subscribe'), 50);
-      }
-    }
-  }, [isLoading, isClerkLoaded, isSignedIn, isAuthenticated, isSubscribed, requireSubscription, setLocation, hasRedirected]);
-
-  // Show loading spinner while checking auth status
-  if (isLoading || !isClerkLoaded) {
+  // Show loading while Clerk loads
+  if (!isLoaded) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
       </div>
     );
   }
 
-  // Show children if authenticated and subscription requirements are met
-  if (isSignedIn && isAuthenticated && (!requireSubscription || isSubscribed)) {
-    return <>{children}</>;
+  // If not signed in, show login prompt
+  if (!isSignedIn) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-center max-w-md mx-auto p-6">
+          <h2 className="text-2xl font-bold mb-4">Sign in required</h2>
+          <p className="text-muted-foreground mb-6">
+            You need to be signed in to access this page.
+          </p>
+          <div className="space-y-3">
+            <Button asChild className="w-full">
+              <Link href="/login">Sign In</Link>
+            </Button>
+            <Button asChild variant="outline" className="w-full">
+              <Link href="/signup">Create Account</Link>
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
-  // Return loading state while redirecting (prevents flash of content)
-  return (
-    <div className="flex h-screen items-center justify-center">
-      <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      <p className="ml-2">Redirecting...</p>
-    </div>
-  );
+  // If subscription is required, show subscription prompt
+  if (requireSubscription) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-center max-w-md mx-auto p-6">
+          <h2 className="text-2xl font-bold mb-4">Subscription required</h2>
+          <p className="text-muted-foreground mb-6">
+            This feature requires an active subscription.
+          </p>
+          <div className="space-y-3">
+            <Button asChild className="w-full">
+              <Link href="/subscribe">Get Subscription</Link>
+            </Button>
+            <Button asChild variant="outline" className="w-full">
+              <Link href="/pricing">View Pricing</Link>
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show content if signed in and no subscription required
+  return <>{children}</>;
 }
