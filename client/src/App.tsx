@@ -5,14 +5,14 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import NotFound from "@/pages/not-found";
-import Home from "@/pages/Home";
-import Landing from "@/pages/Landing";
+import CreatePage from "@/pages/CreateClipPage";
+import LandingPage from "@/pages/LandingPage";
 
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Landing} />
-      <Route path="/create" component={Home} />
+      <Route path="/" component={LandingPage} />
+      <Route path="/create" component={CreatePage} />
       <Route component={NotFound} />
     </Switch>
   );

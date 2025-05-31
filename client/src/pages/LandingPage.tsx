@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Play, Video } from "lucide-react";
-import LandingPageLayout from "@/components/layouts/LandingPage";
+import LandingPageLayout from "@/components/layouts/AppLayout";
 
 export default function Landing() {
   return (
