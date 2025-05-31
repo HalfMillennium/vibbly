@@ -29,18 +29,18 @@ export default function VideoInputForm({ onSubmit }: VideoInputFormProps) {
             <Label htmlFor="video-url" className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-3">
               YouTube Video URL
             </Label>
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-0">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-0 sm:focus-within:ring-2 sm:focus-within:ring-ring sm:focus-within:ring-offset-2 sm:rounded-2xl">
               <Input
                 id="video-url"
                 type="text"
                 value={videoUrl}
                 onChange={(e) => setVideoUrl(e.target.value)}
-                className="flex-1 glass-input sm:rounded-r-none focus-visible:ring-primary border-white/30 dark:border-white/20"
+                className="flex-1 glass-input sm:rounded-r-none focus-visible:ring-0 focus-visible:ring-offset-0 sm:focus-visible:ring-0 border-white/30 dark:border-white/20"
                 placeholder="https://www.youtube.com/watch?v=..."
               />
               <Button 
                 type="submit" 
-                className="sm:rounded-l-none rounded-2xl bg-primary hover:bg-primary/90 px-6 py-3 soft-shadow"
+                className="sm:rounded-l-none rounded-2xl px-6 py-3 soft-shadow focus-visible:ring-0 focus-visible:ring-offset-0 sm:focus-visible:ring-0"
               >
                 <Scissors className="h-4 w-4 mr-2" />
                 <span>Create Clip</span>
