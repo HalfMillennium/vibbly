@@ -62,7 +62,7 @@ export default function ClipInfo({
           <div className="space-y-4">
             <Button 
               onClick={onCreateClip}
-              className="w-full justify-center items-center py-5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md"
+              className="w-full justify-center items-center py-5 rounded-md"
               disabled={startTime >= endTime || endTime === 0}
             >
               <Scissors className="mr-2 h-4 w-4" />
