@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+ import { ReactNode } from "react";
 import AppHeader from "@/components/AppHeader";
 import AppFooter from "@/components/AppFooter";
 

@@ -14,32 +14,21 @@ export default function AppHeader() {
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <div className="flex items-center gap-3">
-              {isLandingPage ? (
-                <img 
-                  src={vibblyLogo} 
-                  alt="Vibbly" 
-                  className="h-8 w-auto object-contain dark:invert"
-                />
-              ) : (
-                <Link to="/">
-                  <button className="p-1 -m-1 rounded-lg hover:bg-white/10 transition-colors">
-                    <img 
-                      src={vibblyLogo} 
-                      alt="Vibbly" 
-                      className="h-8 w-auto object-contain dark:invert"
-                    />
-                  </button>
-                </Link>
-              )}
+              <Link to="/">
+                <button className=" transition-colors">
+                  <img
+                    src={vibblyLogo}
+                    alt="Vibbly"
+                    className="h-6 w-auto object-contain dark:invert"
+                  />
+                </button>
+              </Link>
             </div>
-            <span className="ml-3 text-xs bg-primary/20 text-primary rounded-2xl px-3 py-1 hidden sm:inline-block backdrop-blur-sm">
-              Beta
-            </span>
           </div>
-          
+
           <div className="flex items-center gap-2 sm:gap-4">
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               size="sm"
               className="text-gray-600 dark:text-gray-300 hover:text-primary hover:bg-white/20 dark:hover:bg-white/10 rounded-2xl hidden sm:flex items-center gap-1.5 glass-button"
               title="View Saved Clips"
@@ -47,7 +36,7 @@ export default function AppHeader() {
               <Bookmark className="h-4 w-4" />
               <span className="text-sm">My Clips</span>
             </Button>
-            
+
             <Button
               variant="ghost"
               size="icon"
@@ -56,10 +45,10 @@ export default function AppHeader() {
             >
               <Bookmark className="h-4 w-4" />
             </Button>
-            
+
             <ModeToggle />
-            
-            <Button 
+
+            <Button
               variant="outline"
               size="sm"
               className="flex items-center gap-1.5 text-sm glass-button rounded-2xl border-white/30 dark:border-white/20"
