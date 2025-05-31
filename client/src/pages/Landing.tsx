@@ -51,7 +51,7 @@ export default function Landing() {
               <Button
                 asChild
                 size="lg"
-                className="bg-primary hover:bg-primary/90 text-black px-8 py-4 rounded-2xl text-lg w-full sm:w-auto glass-button border-0 soft-shadow"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-2xl text-lg w-full sm:w-auto glass-button border-0 soft-shadow"
               >
                 <Link to="/create">
                   <Play className="h-5 w-5 mr-2" />
