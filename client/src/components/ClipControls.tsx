@@ -114,6 +114,10 @@ export default function ClipControls({
     // Handler for mouse/touch movement
     const handleMove = (e: MouseEvent | TouchEvent) => {
       if (!trackRef.current || !videoDuration) return;
+      if (!isDraggingStartRef.current && !isDraggingEndRef.current) return;
+      
+      // Prevent default behavior to avoid text selection
+      e.preventDefault();
       
       // Calculate position
       const rect = trackRef.current.getBoundingClientRect();
@@ -132,20 +136,30 @@ export default function ClipControls({
     };
     
     // Handler for ending the drag operation
-    const handleEnd = () => {
+    const handleEnd = (e: MouseEvent | TouchEvent) => {
+      e.preventDefault();
       isDraggingStartRef.current = false;
       isDraggingEndRef.current = false;
+      
+      // Re-enable text selection
+      document.body.style.userSelect = '';
     };
     
     // Start drag operations
-    const startStartDrag = () => {
+    const startStartDrag = (e: MouseEvent | TouchEvent) => {
+      e.preventDefault();
       isDraggingStartRef.current = true;
       isDraggingEndRef.current = false;
+      // Disable text selection during drag
+      document.body.style.userSelect = 'none';
     };
     
-    const startEndDrag = () => {
+    const startEndDrag = (e: MouseEvent | TouchEvent) => {
+      e.preventDefault();
       isDraggingStartRef.current = false;
       isDraggingEndRef.current = true;
+      // Disable text selection during drag
+      document.body.style.userSelect = 'none';
     };
     
     // Add event listeners to the markers
