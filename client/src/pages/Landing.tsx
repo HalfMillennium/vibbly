@@ -1,37 +1,11 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Play, Video } from "lucide-react";
-import { ModeToggle } from "@/components/mode-toggle";
-import vibblyLogo from "@assets/vibbly_logo.png";
+import LandingPageLayout from "@/components/layouts/LandingPage";
 
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900/20 dark:to-purple-900/20 transition-colors">
-      {/* Navigation */}
-      <nav className="glass-nav sticky top-0 z-50 py-4">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <img
-                src={vibblyLogo}
-                alt="Vibbly"
-                className="h-8 w-auto object-contain dark:invert"
-              />
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <ModeToggle />
-              <Button
-                asChild
-                className="bg-primary hover:bg-primary/90 text-white rounded-2xl px-6 py-2 glass-button"
-              >
-                <Link to="/create">Try it free</Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </nav>
-
+    <LandingPageLayout>
       {/* Hero Section */}
       <section className="py-20 md:py-32">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -105,6 +79,6 @@ export default function Landing() {
           </div>
         </div>
       </section>
-    </div>
+    </LandingPageLayout>
   );
 }
