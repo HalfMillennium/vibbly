@@ -255,19 +255,19 @@ export default function ClipControls({
               <Label htmlFor="start-time" className="block text-sm font-medium text-gray-700 mb-1.5 control-label">
                 Start Time
               </Label>
-              <div className="flex rounded-md shadow-sm">
+              <div className="flex rounded-md shadow-sm focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
                 <Input 
                   id="start-time" 
                   value={startTimeDisplay}
                   onChange={handleStartTimeInputChange}
                   onBlur={handleStartTimeInputBlur}
-                  className="flex-1 rounded-r-none border-r-0"
+                  className="flex-1 rounded-r-none border-r-0 focus-visible:ring-0 focus-visible:ring-offset-0"
                   placeholder="0:00"
                 />
                 <Button 
                   type="button"
                   variant="outline"
-                  className="rounded-l-none"
+                  className="rounded-l-none focus-visible:ring-0 focus-visible:ring-offset-0"
                   onClick={() => onStartTimeChange(0)}
                 >
                   <Scissors className="h-3.5 w-3.5" />
@@ -279,19 +279,19 @@ export default function ClipControls({
               <Label htmlFor="end-time" className="block text-sm font-medium text-gray-700 mb-1.5 control-label">
                 End Time
               </Label>
-              <div className="flex rounded-md shadow-sm">
+              <div className="flex rounded-md shadow-sm focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
                 <Input 
                   id="end-time" 
                   value={endTimeDisplay}
                   onChange={handleEndTimeInputChange}
                   onBlur={handleEndTimeInputBlur}
-                  className="flex-1 rounded-r-none border-r-0"
+                  className="flex-1 rounded-r-none border-r-0 focus-visible:ring-0 focus-visible:ring-offset-0"
                   placeholder="0:00"
                 />
                 <Button 
                   type="button"
                   variant="outline"
-                  className="rounded-l-none"
+                  className="rounded-l-none focus-visible:ring-0 focus-visible:ring-offset-0"
                   onClick={() => onEndTimeChange(videoDuration)}
                 >
                   <Scissors className="h-3.5 w-3.5" />
