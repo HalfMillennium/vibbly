@@ -13,7 +13,7 @@ export default function AppHeader() {
               <img 
                 src={vibblyLogo} 
                 alt="Vibbly" 
-                className="h-8 w-auto object-contain"
+                className="h-8 w-auto object-contain dark:invert"
               />
             </div>
             <span className="ml-3 text-xs bg-primary/20 text-primary rounded-2xl px-3 py-1 hidden sm:inline-block backdrop-blur-sm">

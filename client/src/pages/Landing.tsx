@@ -15,7 +15,7 @@ export default function Landing() {
               <img 
                 src={vibblyLogo} 
                 alt="Vibbly" 
-                className="h-8 w-auto object-contain"
+                className="h-8 w-auto object-contain dark:invert"
               />
             </div>
             
