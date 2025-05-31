@@ -1,7 +1,8 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Scissors, Play } from "lucide-react";
+import { Play, Video } from "lucide-react";
 import { ModeToggle } from "@/components/mode-toggle";
+import vibblyLogo from "@assets/vibbly_logo.png";
 
 export default function Landing() {
   return (
@@ -10,11 +11,12 @@ export default function Landing() {
       <nav className="glass-nav sticky top-0 z-50 py-4">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
-              <Scissors className="h-5 w-5 text-primary" />
-              <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
-                <span className="text-primary">Clip</span>Craft
-              </h1>
+            <div className="flex items-center gap-3">
+              <img 
+                src={vibblyLogo} 
+                alt="Vibbly" 
+                className="h-8 w-auto object-contain"
+              />
             </div>
             
             <div className="flex items-center space-x-4">
@@ -54,7 +56,7 @@ export default function Landing() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="glass-card p-8 text-center">
               <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-primary/10 backdrop-blur-sm rounded-3xl flex items-center justify-center mx-auto mb-6">
-                <Scissors className="h-8 w-8 text-primary" />
+                <Video className="h-8 w-8 text-primary" />
               </div>
               <h3 className="font-bold text-gray-900 dark:text-white mb-3 text-lg">Precise Timing</h3>
               <p className="text-gray-700 dark:text-gray-200">Set exact start and end times with intuitive timeline controls</p>

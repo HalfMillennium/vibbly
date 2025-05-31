@@ -1,6 +1,7 @@
-import { Bookmark, User, Scissors } from "lucide-react";
+import { Bookmark, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
+import vibblyLogo from "@assets/vibbly_logo.png";
 
 export default function AppHeader() {
   return (
@@ -8,13 +9,14 @@ export default function AppHeader() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <div className="flex items-center gap-1.5">
-              <Scissors className="h-5 w-5 text-primary" />
-              <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
-                <span className="text-primary">Clip</span>Craft
-              </h1>
+            <div className="flex items-center gap-3">
+              <img 
+                src={vibblyLogo} 
+                alt="Vibbly" 
+                className="h-8 w-auto object-contain"
+              />
             </div>
-            <span className="ml-2 text-xs bg-primary/20 text-primary rounded-2xl px-3 py-1 hidden sm:inline-block backdrop-blur-sm">
+            <span className="ml-3 text-xs bg-primary/20 text-primary rounded-2xl px-3 py-1 hidden sm:inline-block backdrop-blur-sm">
               Beta
             </span>
           </div>
