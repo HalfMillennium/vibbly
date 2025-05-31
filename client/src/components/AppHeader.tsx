@@ -1,20 +1,36 @@
 import { Bookmark, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
+import { Link, useLocation } from "wouter";
 import vibblyLogo from "@assets/vibbly_logo.png";
 
 export default function AppHeader() {
+  const [location] = useLocation();
+  const isLandingPage = location === "/";
+
   return (
     <header className="glass-nav sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <div className="flex items-center gap-3">
-              <img 
-                src={vibblyLogo} 
-                alt="Vibbly" 
-                className="h-8 w-auto object-contain dark:invert"
-              />
+              {isLandingPage ? (
+                <img 
+                  src={vibblyLogo} 
+                  alt="Vibbly" 
+                  className="h-8 w-auto object-contain dark:invert"
+                />
+              ) : (
+                <Link to="/">
+                  <button className="p-1 -m-1 rounded-lg hover:bg-white/10 transition-colors">
+                    <img 
+                      src={vibblyLogo} 
+                      alt="Vibbly" 
+                      className="h-8 w-auto object-contain dark:invert"
+                    />
+                  </button>
+                </Link>
+              )}
             </div>
             <span className="ml-3 text-xs bg-primary/20 text-primary rounded-2xl px-3 py-1 hidden sm:inline-block backdrop-blur-sm">
               Beta
