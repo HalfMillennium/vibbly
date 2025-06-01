@@ -8,6 +8,7 @@ interface ClipInfoProps {
   startTime: number;
   endTime: number;
   clipCreated: boolean;
+  isCreating: boolean;
   onCreateClip: () => void;
   onCopyLink: () => void;
 }
@@ -17,6 +18,7 @@ export default function ClipInfo({
   startTime,
   endTime,
   clipCreated,
+  isCreating,
   onCreateClip,
   onCopyLink,
 }: ClipInfoProps) {
@@ -63,10 +65,10 @@ export default function ClipInfo({
             <Button 
               onClick={onCreateClip}
               className="w-full justify-center items-center py-5 rounded-md"
-              disabled={startTime >= endTime || endTime === 0}
+              disabled={startTime >= endTime || endTime === 0 || isCreating}
             >
               <Scissors className="mr-2 h-4 w-4" />
-              Create & Share Clip
+              {isCreating ? "Creating Clip..." : "Create & Share Clip"}
             </Button>
             
             {clipCreated ? (

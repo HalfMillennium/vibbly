@@ -24,6 +24,7 @@ export default function CreateClipPage() {
   const [clipCreated, setClipCreated] = useState<boolean>(false);
   const [clipId, setClipId] = useState<string | null>(null);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState<boolean>(false);
+  const [isCreating, setIsCreating] = useState<boolean>(false);
 
   // Reference to video player container
   const videoPlayerRef = useRef<HTMLDivElement>(null);
@@ -65,6 +66,8 @@ export default function CreateClipPage() {
       return;
     }
 
+    setIsCreating(true);
+
     try {
       const response = await fetch("/api/clips", {
         method: "POST",
@@ -95,6 +98,8 @@ export default function CreateClipPage() {
           "There was a problem creating your clip. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsCreating(false);
     }
   };
 
@@ -164,6 +169,7 @@ export default function CreateClipPage() {
                   endTime={endTime}
                   onCreateClip={handleCreateClip}
                   clipCreated={clipCreated}
+                  isCreating={isCreating}
                   onCopyLink={handleCopyLink}
                 />
               </div>
