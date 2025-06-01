@@ -15,9 +15,10 @@ export default function ClipConfirmationPage() {
 
   // Extract share ID from URL parameters
   useEffect(() => {
-    const urlParams = new URLSearchParams(location.split('?')[1] || '');
-    const id = urlParams.get('shareId');
+    const urlParams = new URLSearchParams(location.split("?")[1] || "");
+    const id = urlParams.get("shareId");
     setShareId(id);
+    console.log("fullLocation", location);
   }, [location]);
 
   // Trigger confetti animation when shareId is available
@@ -28,31 +29,37 @@ export default function ClipConfirmationPage() {
         max: 80,
         size: 1,
         animate: true,
-        props: ['circle', 'square', 'triangle'],
-        colors: [[165, 104, 246], [139, 69, 19], [204, 204, 204], [80, 200, 120], [255, 69, 0]],
+        props: ["circle", "square", "triangle"],
+        colors: [
+          [165, 104, 246],
+          [139, 69, 19],
+          [204, 204, 204],
+          [80, 200, 120],
+          [255, 69, 0],
+        ],
         clock: 25,
         rotate: true,
         width: window.innerWidth,
         height: window.innerHeight,
         start_from_edge: false,
-        respawn: false
+        respawn: false,
       };
-      
+
       const confetti = new ConfettiGenerator(confettiSettings);
       confetti.render();
-      
+
       // Stop confetti after 4 seconds
       setTimeout(() => {
         confetti.clear();
       }, 4000);
-      
+
       return () => {
         confetti.clear();
       };
     }
   }, [shareId]);
 
-  const clipUrl = shareId ? `${window.location.origin}/view/${shareId}` : '';
+  const clipUrl = shareId ? `${window.location.origin}/view/${shareId}` : "";
 
   const handleCopyLink = () => {
     if (clipUrl) {
@@ -66,7 +73,7 @@ export default function ClipConfirmationPage() {
 
   const handleOpenClip = () => {
     if (shareId) {
-      window.open(`/view/${shareId}`, '_blank');
+      window.open(`/view/${shareId}`, "_blank");
     }
   };
 
@@ -96,9 +103,15 @@ export default function ClipConfirmationPage() {
       <canvas
         ref={confettiRef}
         className="fixed inset-0 pointer-events-none z-50"
-        style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%' }}
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+        }}
       />
-      
+
       <div className="max-w-2xl mx-auto px-4 py-8 space-y-8">
         {/* Success Header */}
         <div className="text-center space-y-6">
@@ -122,7 +135,7 @@ export default function ClipConfirmationPage() {
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                 Share Your Clip
               </h2>
-              
+
               {/* URL Display */}
               <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border-2 border-dashed border-gray-200 dark:border-gray-700">
                 <div className="flex items-center gap-2 text-sm font-mono text-gray-700 dark:text-gray-300 break-all">
@@ -141,7 +154,7 @@ export default function ClipConfirmationPage() {
                 <Copy className="w-4 h-4 mr-2" />
                 Copy Link
               </Button>
-              
+
               <Button
                 onClick={handleOpenClip}
                 className="flex-1"
@@ -157,15 +170,11 @@ export default function ClipConfirmationPage() {
         {/* Navigation Buttons */}
         <div className="flex flex-col sm:flex-row gap-3">
           <Button asChild className="flex-1" variant="default">
-            <Link to="/my-clips">
-              View My Clips
-            </Link>
+            <Link to="/my-clips">View My Clips</Link>
           </Button>
-          
+
           <Button asChild className="flex-1" variant="outline">
-            <Link to="/create">
-              Create Another Clip
-            </Link>
+            <Link to="/create">Create Another Clip</Link>
           </Button>
         </div>
       </div>
