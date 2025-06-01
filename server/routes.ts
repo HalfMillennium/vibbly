@@ -10,11 +10,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/clips", async (req, res) => {
     try {
       const { userId } = getAuth(req);
-      
+
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
-      
+
       const clips = await storage.getClipsByUserId(userId);
       res.json(clips);
     } catch (error) {
@@ -52,40 +52,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/clips", async (req, res) => {
     try {
       const { userId } = getAuth(req);
-      
+
       console.log("Authentication result:", { userId, type: typeof userId });
-      
+
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
-      
+
       const validationResult = insertClipSchema.safeParse(req.body);
-      
+      console.log("Validation result:", validationResult, req.body);
       if (!validationResult.success) {
-        return res.status(400).json({ 
+        return res.status(400).json({
           message: "Invalid clip data",
-          errors: validationResult.error.format() 
+          errors: validationResult.error.format(),
         });
       }
-      
+
       const clipData = validationResult.data;
-      
+
       // Generate a unique share ID
       const shareId = generateId(12);
-      
-      console.log("About to create clip with:", { 
-        clipData, 
-        shareId, 
+
+      console.log("About to create clip with:", {
+        clipData,
+        shareId,
         createdByUserId: userId,
-        userIdType: typeof userId 
+        userIdType: typeof userId,
       });
-      
+
       const clip = await storage.createClip({
         ...clipData,
         shareId,
-        createdByUserId: userId
+        createdByUserId: userId,
       });
-      
+
       res.status(201).json(clip);
     } catch (error) {
       console.error("Error creating clip:", error);
