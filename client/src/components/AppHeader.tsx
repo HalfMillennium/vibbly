@@ -66,10 +66,15 @@ export default function AppHeader() {
                   elements: {
                     avatarBox: "w-8 h-8",
                     userButtonPopoverCard: "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg",
+                    userButtonPopoverHeader: "bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700",
+                    userButtonPopoverMain: "bg-white dark:bg-gray-800",
+                    userButtonPopoverFooter: "bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700",
                     userButtonPopoverActions: "bg-white dark:bg-gray-800",
                     userButtonPopoverActionButton: "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700",
                     userButtonPopoverActionButtonText: "text-gray-700 dark:text-gray-200",
-                    userButtonPopoverActionButtonIcon: "text-gray-500 dark:text-gray-400"
+                    userButtonPopoverActionButtonIcon: "text-gray-500 dark:text-gray-400",
+                    userPreviewMainIdentifier: "text-gray-900 dark:text-gray-100",
+                    userPreviewSecondaryIdentifier: "text-gray-600 dark:text-gray-400"
                   }
                 }}
                 showName={false}
@@ -80,16 +85,27 @@ export default function AppHeader() {
                 appearance={{
                   elements: {
                     modalContent: "bg-white dark:bg-gray-900",
+                    modalCloseButton: "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200",
                     card: "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700",
+                    cardBox: "bg-white dark:bg-gray-800",
+                    header: "bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700",
                     headerTitle: "text-gray-900 dark:text-gray-100",
                     headerSubtitle: "text-gray-600 dark:text-gray-400",
-                    socialButtonsBlockButton: "border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700",
+                    main: "bg-white dark:bg-gray-800",
+                    footer: "bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700",
+                    footerActionText: "text-gray-600 dark:text-gray-400",
+                    footerActionLink: "text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300",
+                    socialButtonsBlockButton: "border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 bg-white dark:bg-gray-800",
+                    socialButtonsBlockButtonText: "text-gray-700 dark:text-gray-200",
                     dividerLine: "bg-gray-200 dark:bg-gray-600",
                     dividerText: "text-gray-500 dark:text-gray-400",
                     formFieldInput: "bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100",
                     formFieldLabel: "text-gray-700 dark:text-gray-300",
+                    formFieldWarningText: "text-red-600 dark:text-red-400",
                     identityPreviewText: "text-gray-900 dark:text-gray-100",
-                    formButtonPrimary: "bg-blue-600 hover:bg-blue-700 text-white"
+                    identityPreviewEditButton: "text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300",
+                    formButtonPrimary: "bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-600 dark:hover:bg-blue-700",
+                    formButtonReset: "text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
                   }
                 }}
               >
