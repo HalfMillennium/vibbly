@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { formatTime, parseTimeInput } from "@/lib/utils";
 import { StepBack, StepForward, Play, ChevronDown, ChevronUp, Scissors } from "lucide-react";
@@ -301,16 +302,29 @@ export default function ClipControls({
           </div>
           
           {/* Clip Preview Controls */}
-          <div className="flex flex-wrap justify-center sm:justify-between items-center gap-2">
-            <Button 
-              variant="outline"
-              size="sm"
-              onClick={onPreviewClip}
-              className="flex items-center text-gray-700 px-4"
-            >
-              <Play className="h-3.5 w-3.5 mr-1.5" />
-              <span className="text-sm">Preview Clip</span>
-            </Button>
+          <div className="flex flex-wrap justify-center sm:justify-between items-center gap-4">
+            <div className="flex items-center gap-4">
+              <Button 
+                variant="outline"
+                size="sm"
+                onClick={onPreviewClip}
+                className="flex items-center text-gray-700 px-4"
+              >
+                <Play className="h-3.5 w-3.5 mr-1.5" />
+                <span className="text-sm">Preview Clip</span>
+              </Button>
+              
+              <div className="flex items-center space-x-2">
+                <Switch 
+                  id="loop-preview" 
+                  checked={loopClip}
+                  onCheckedChange={onLoopClipChange}
+                />
+                <Label htmlFor="loop-preview" className="text-sm text-gray-700 dark:text-gray-200">
+                  Loop
+                </Label>
+              </div>
+            </div>
             
             <div className="text-sm text-gray-600 dark:text-gray-300 font-medium">
               Duration: <span className="text-gray-900 dark:text-gray-100">{formatTime(endTime - startTime)}</span>
@@ -348,28 +362,15 @@ export default function ClipControls({
               />
             </div>
             
-            <div className="flex flex-col sm:flex-row sm:items-center sm:gap-8">
-              <div className="flex items-center space-x-3 mb-3 sm:mb-0">
-                <Checkbox 
-                  id="loop-clip" 
-                  checked={loopClip}
-                  onCheckedChange={(checked) => onLoopClipChange(checked as boolean)}
-                />
-                <Label htmlFor="loop-clip" className="text-sm text-gray-700 dark:text-gray-200">
-                  Loop clip in preview
-                </Label>
-              </div>
-              
-              <div className="flex items-center space-x-3">
-                <Checkbox 
-                  id="include-subtitles" 
-                  checked={includeSubtitles}
-                  onCheckedChange={(checked) => onIncludeSubtitlesChange(checked as boolean)}
-                />
-                <Label htmlFor="include-subtitles" className="text-sm text-gray-700 dark:text-gray-200">
-                  Include subtitles
-                </Label>
-              </div>
+            <div className="flex items-center space-x-3">
+              <Checkbox 
+                id="include-subtitles" 
+                checked={includeSubtitles}
+                onCheckedChange={(checked) => onIncludeSubtitlesChange(checked as boolean)}
+              />
+              <Label htmlFor="include-subtitles" className="text-sm text-gray-700 dark:text-gray-200">
+                Include subtitles
+              </Label>
             </div>
           </div>
         )}
