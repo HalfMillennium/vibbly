@@ -61,24 +61,7 @@ export default function CreateClipPage() {
     }
   };
 
-  // Monitor player state changes
-  useEffect(() => {
-    if (!player) return;
 
-    const checkPlayerState = () => {
-      try {
-        const time = getPlayerCurrentTime();
-        if (time !== currentTime) {
-          setCurrentTime(time);
-        }
-      } catch (error) {
-        // Player might not be ready yet
-      }
-    };
-
-    const interval = setInterval(checkPlayerState, 100);
-    return () => clearInterval(interval);
-  }, [player, getPlayerCurrentTime]);
 
   const handleCreateClip = async () => {
     if (!videoId || startTime >= endTime) {
@@ -110,8 +93,8 @@ export default function CreateClipPage() {
 
       if (response.ok) {
         const data = await response.json();
-        // Redirect to confirmation page with clip ID
-        setLocation(`/clip-created?id=${data.id}`);
+        // Redirect to confirmation page with share ID
+        setLocation(`/clip-created?shareId=${data.shareId}`);
       } else {
         throw new Error("Failed to create clip");
       }

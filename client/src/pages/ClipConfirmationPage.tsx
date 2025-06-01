@@ -24,23 +24,23 @@ interface Clip {
 export default function ClipConfirmationPage() {
   const { toast } = useToast();
   const [location] = useLocation();
-  const [clipId, setClipId] = useState<string | null>(null);
+  const [shareId, setShareId] = useState<string | null>(null);
 
-  // Extract clip ID from URL parameters
+  // Extract share ID from URL parameters
   useEffect(() => {
     const urlParams = new URLSearchParams(location.split('?')[1] || '');
-    const id = urlParams.get('id');
-    setClipId(id);
+    const id = urlParams.get('shareId');
+    setShareId(id);
   }, [location]);
 
   const { data: clip, isLoading } = useQuery<Clip>({
-    queryKey: ['/api/clips', clipId],
-    enabled: !!clipId,
+    queryKey: [`/api/clips/share/${shareId}`],
+    enabled: !!shareId,
   });
 
   const handleCopyLink = () => {
     if (clip) {
-      const clipUrl = `${window.location.origin}/clip/${clip.shareId}`;
+      const clipUrl = `${window.location.origin}/view/${clip.shareId}`;
       navigator.clipboard.writeText(clipUrl);
       toast({
         title: "Link copied!",

@@ -345,16 +345,6 @@ export default function ClipControls({
             <Button
               variant="outline"
               size="sm"
-              onClick={onPlayClip}
-              className="flex items-center text-gray-700 px-4"
-            >
-              <Play className="h-3.5 w-3.5" />
-              <span className="text-sm">Play Clip</span>
-            </Button>
-
-            <Button
-              variant="outline"
-              size="sm"
               onClick={onPreviewClip}
               className="flex items-center text-gray-700 px-4"
             >
