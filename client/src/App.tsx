@@ -79,6 +79,7 @@ function Router() {
           <ClipConfirmationPage />
         </ProtectedRoute>
       </Route>
+      <Route path="/view/:shareId" component={ViewClipPage} />
       <Route component={NotFound} />
     </Switch>
   );

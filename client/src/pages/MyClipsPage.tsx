@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Play, Clock, Share2, ExternalLink } from "lucide-react";
 import { formatTime, formatDate } from "@/lib/utils";
 import CreatePageLayout from "@/components/layouts/CreatePage";
+import { Link } from "wouter";
 
 interface Clip {
   id: number;
@@ -83,13 +84,15 @@ export default function MyClipsPage() {
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
                   />
                   <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
-                    <Button
-                      size="icon"
-                      variant="secondary"
-                      className="rounded-full"
-                    >
-                      <Play className="h-4 w-4" />
-                    </Button>
+                    <Link href={`/view/${clip.shareId}`}>
+                      <Button
+                        size="icon"
+                        variant="secondary"
+                        className="rounded-full"
+                      >
+                        <Play className="h-4 w-4" />
+                      </Button>
+                    </Link>
                   </div>
                   <div className="absolute bottom-2 right-2">
                     <Badge variant="secondary" className="text-xs">

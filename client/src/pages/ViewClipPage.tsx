@@ -157,7 +157,7 @@ export default function ViewClipPage() {
         {/* Video Player */}
         <div className="max-w-4xl mx-auto mb-8">
           <Card className="overflow-hidden backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 border-white/20 shadow-2xl">
-            <div className="aspect-video bg-black">
+            <div className="aspect-video bg-black" ref={containerRef}>
               <div 
                 id="youtube-player" 
                 className="w-full h-full"
