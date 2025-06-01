@@ -40,6 +40,72 @@ export function parseTimeInput(timeString: string): number | null {
 }
 
 /**
+ * Format a date with basic options
+ */
+export function formatDate(date: Date | string | number, options?: {
+  format?: 'short' | 'medium' | 'long' | 'relative';
+  includeTime?: boolean;
+  timeFormat?: '12h' | '24h';
+}): string {
+  if (!date) return "";
+  
+  const dateObj = new Date(date);
+  if (isNaN(dateObj.getTime())) return "Invalid Date";
+  
+  const { format = 'medium', includeTime = false, timeFormat = '12h' } = options || {};
+  
+  const now = new Date();
+  const diffMs = now.getTime() - dateObj.getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  
+  // Relative format
+  if (format === 'relative') {
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    
+    if (diffMinutes < 1) return "Just now";
+    if (diffMinutes < 60) return `${diffMinutes}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays === 1) return "Yesterday";
+    if (diffDays < 7) return `${diffDays}d ago`;
+    if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`;
+    if (diffDays < 365) return `${Math.floor(diffDays / 30)}mo ago`;
+    return `${Math.floor(diffDays / 365)}y ago`;
+  }
+  
+  // Date formatting
+  const formatOptions: Intl.DateTimeFormatOptions = {};
+  
+  switch (format) {
+    case 'short':
+      formatOptions.month = 'numeric';
+      formatOptions.day = 'numeric';
+      formatOptions.year = '2-digit';
+      break;
+    case 'medium':
+      formatOptions.month = 'short';
+      formatOptions.day = 'numeric';
+      formatOptions.year = 'numeric';
+      break;
+    case 'long':
+      formatOptions.month = 'long';
+      formatOptions.day = 'numeric';
+      formatOptions.year = 'numeric';
+      formatOptions.weekday = 'long';
+      break;
+  }
+  
+  // Time formatting
+  if (includeTime) {
+    formatOptions.hour = 'numeric';
+    formatOptions.minute = '2-digit';
+    formatOptions.hour12 = timeFormat === '12h';
+  }
+  
+  return dateObj.toLocaleDateString('en-US', formatOptions);
+}
+
+/**
  * Generate a random ID string
  */
 export function generateId(length = 8): string {
