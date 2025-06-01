@@ -11,6 +11,7 @@ export const clips = pgTable("clips", {
   endTime: integer("end_time").notNull(),
   includeSubtitles: boolean("include_subtitles").default(false),
   shareId: text("share_id").notNull().unique(),
+  createdByUserId: text("created_by_user_id").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -18,6 +19,7 @@ export const insertClipSchema = createInsertSchema(clips).omit({
   id: true,
   createdAt: true,
   shareId: true,
+  createdByUserId: true,
 });
 
 export type InsertClip = z.infer<typeof insertClipSchema>;

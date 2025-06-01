@@ -3,12 +3,19 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertClipSchema } from "@shared/schema";
 import { generateId } from "../client/src/lib/utils";
+import { getAuth } from "@clerk/express";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // API routes
   app.get("/api/clips", async (req, res) => {
     try {
-      const clips = await storage.getAllClips();
+      const { userId } = getAuth(req);
+      
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      const clips = await storage.getClipsByUserId(userId);
       res.json(clips);
     } catch (error) {
       console.error("Error fetching clips:", error);
@@ -44,6 +51,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/clips", async (req, res) => {
     try {
+      const { userId } = getAuth(req);
+      
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
       const validationResult = insertClipSchema.safeParse(req.body);
       
       if (!validationResult.success) {
@@ -60,7 +73,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const clip = await storage.createClip({
         ...clipData,
-        shareId
+        shareId,
+        createdByUserId: userId
       });
       
       res.status(201).json(clip);
