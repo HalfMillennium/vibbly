@@ -169,6 +169,7 @@ export default function CreateClipPage() {
                   loopClip={loopClip}
                   onLoopClipChange={setLoopClip}
                   onPreviewClip={handlePreviewClip}
+                  onPlayClip={handlePlayClip}
                 />
               </div>
 
