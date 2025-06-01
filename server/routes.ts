@@ -23,6 +23,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/clips/share/:shareId", async (req, res) => {
+    try {
+      const clip = await storage.getClipByShareId(req.params.shareId);
+      if (!clip) {
+        return res.status(404).json({ message: "Clip not found" });
+      }
+      res.json(clip);
+    } catch (error) {
+      console.error("Error fetching clip by share ID:", error);
+      res.status(500).json({ message: "Failed to fetch clip" });
+    }
+  });
+
   app.get("/api/clips/:id", async (req, res) => {
     try {
       const { userId } = getAuth(req);
@@ -44,19 +57,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(clip);
     } catch (error) {
       console.error("Error fetching clip:", error);
-      res.status(500).json({ message: "Failed to fetch clip" });
-    }
-  });
-
-  app.get("/api/clips/share/:shareId", async (req, res) => {
-    try {
-      const clip = await storage.getClipByShareId(req.params.shareId);
-      if (!clip) {
-        return res.status(404).json({ message: "Clip not found" });
-      }
-      res.json(clip);
-    } catch (error) {
-      console.error("Error fetching clip by share ID:", error);
       res.status(500).json({ message: "Failed to fetch clip" });
     }
   });
