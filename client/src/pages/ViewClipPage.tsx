@@ -156,80 +156,105 @@ export default function ViewClipPage() {
 
         {/* Video Player */}
         <div className="max-w-4xl mx-auto mb-8">
-          <Card className="overflow-hidden backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 border-white/20 shadow-2xl">
-            <div className="aspect-video bg-black" ref={containerRef}>
-              <div 
-                id="youtube-player" 
-                className="w-full h-full"
-                style={{ minHeight: '400px' }}
+          <div className="mb-8 video-container-wrapper">
+            <div className="video-container" ref={containerRef}>
+              <div
+                id="youtube-player"
+                className="w-full h-full bg-black"
+                key="youtube-player-container"
               />
+
+              {/* Clip Indicator Overlay */}
+              {clip && (
+                <div className="absolute top-4 left-4 bg-black/70 text-white px-3 py-1.5 rounded-full text-xs flex items-center">
+                  <Clock className="h-3 w-3 mr-1.5" />
+                  <span className="font-medium">
+                    {formatTime(clip.endTime - clip.startTime)}
+                  </span>
+                </div>
+              )}
+
+              {/* Custom Video Controls Overlay */}
+              {clip && (
+                <div className="video-controls">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center space-x-3">
+                      <button
+                        onClick={handlePlayPause}
+                        className="text-white hover:text-primary transition"
+                      >
+                        {isPlaying ? (
+                          <Pause className="h-5 w-5 sm:h-6 sm:w-6" />
+                        ) : (
+                          <Play className="h-5 w-5 sm:h-6 sm:w-6" />
+                        )}
+                      </button>
+
+                      <div className="text-xs sm:text-sm font-medium">
+                        <span>{formatTime(currentTime)}</span>
+                        <span className="mx-1">/</span>
+                        <span>{formatTime(clip.endTime)}</span>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={openOriginalVideo}
+                      className="text-white hover:text-primary transition"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                    </button>
+                  </div>
+
+                  {/* Video Progress Bar */}
+                  <div className="w-full h-1.5 bg-gray-600/50 rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-primary transition-all duration-100"
+                      style={{ width: `${Math.max(0, Math.min(100, progress))}%` }}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
-            
-            {/* Progress Bar */}
-            <div className="p-1 bg-gray-200 dark:bg-gray-700">
-              <div 
-                className="h-1 bg-gradient-to-r from-purple-500 to-indigo-500 transition-all duration-100 ease-out rounded-full"
-                style={{ width: `${Math.max(0, Math.min(100, progress))}%` }}
-              />
-            </div>
-          </Card>
+          </div>
         </div>
 
         {/* Controls */}
         <div className="max-w-2xl mx-auto">
           <Card className="p-6 backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 border-white/20 shadow-xl">
             <div className="space-y-6">
-              {/* Play Controls */}
-              <div className="flex items-center justify-center gap-4">
-                <Button
-                  onClick={handleRestart}
-                  variant="outline"
-                  size="lg"
-                  className="glass-button border-white/30 dark:border-white/20 hover:scale-105 transition-transform"
-                >
-                  <RotateCcw className="w-5 h-5 mr-2" />
-                  Restart
-                </Button>
-                
-                <Button
-                  onClick={handlePlayPause}
-                  size="lg"
-                  className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-8 py-4 text-lg hover:scale-105 transition-transform shadow-lg"
-                >
-                  {isPlaying ? (
-                    <>
-                      <Pause className="w-6 h-6 mr-2" />
-                      Pause
-                    </>
-                  ) : (
-                    <>
-                      <Play className="w-6 h-6 mr-2" />
-                      Play
-                    </>
-                  )}
-                </Button>
-
-                <Button
-                  onClick={openOriginalVideo}
-                  variant="outline"
-                  size="lg"
-                  className="glass-button border-white/30 dark:border-white/20 hover:scale-105 transition-transform"
-                >
-                  <ExternalLink className="w-5 h-5 mr-2" />
-                  Original
-                </Button>
-              </div>
-
               {/* Loop Toggle */}
               <div className="flex items-center justify-center space-x-3">
-                <Label htmlFor="loop-toggle" className="text-sm font-medium">
-                  Loop clip
-                </Label>
                 <Switch
                   id="loop-toggle"
                   checked={loopEnabled}
                   onCheckedChange={setLoopEnabled}
                 />
+                <Label htmlFor="loop-toggle" className="text-sm font-medium">
+                  Loop clip
+                </Label>
+              </div>
+
+              {/* Secondary Actions */}
+              <div className="flex items-center justify-center gap-3">
+                <Button
+                  onClick={handleRestart}
+                  variant="outline"
+                  size="sm"
+                  className="glass-button border-white/30 dark:border-white/20"
+                >
+                  <RotateCcw className="w-4 h-4 mr-2" />
+                  Restart
+                </Button>
+
+                <Button
+                  onClick={openOriginalVideo}
+                  variant="outline"
+                  size="sm"
+                  className="glass-button border-white/30 dark:border-white/20"
+                >
+                  <ExternalLink className="w-4 h-4 mr-2" />
+                  Watch on YouTube
+                </Button>
               </div>
 
               {/* Clip Info */}
