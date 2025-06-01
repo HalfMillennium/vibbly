@@ -112,8 +112,9 @@ export default function CreateClipPage() {
   // Function to preview the clip
   const handlePreviewClip = () => {
     if (startTime >= 0 && endTime > startTime) {
-      // Seek to the start time and play
+      // Always seek to the start time first
       seekTo(startTime);
+      // Then ensure the video is playing
       play();
 
       toast({
