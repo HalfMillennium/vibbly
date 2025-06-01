@@ -77,8 +77,8 @@ export default function CreateClipPage() {
         body: JSON.stringify({
           videoId,
           videoTitle,
-          startTime,
-          endTime,
+          startTime: Math.round(startTime),
+          endTime: Math.round(endTime),
           clipTitle: clipTitle || videoTitle,
           includeSubtitles,
         }),

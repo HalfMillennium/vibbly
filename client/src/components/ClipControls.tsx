@@ -128,10 +128,10 @@ export default function ClipControls({
       
       // Update times based on which marker is being dragged
       if (isDraggingStartRef.current) {
-        const newTime = Math.max(0, Math.min(clampedPosition * videoDuration, endTime - 1));
+        const newTime = Math.round(Math.max(0, Math.min(clampedPosition * videoDuration, endTime - 1)));
         onStartTimeChange(newTime);
       } else if (isDraggingEndRef.current) {
-        const newTime = Math.min(videoDuration, Math.max(startTime + 1, clampedPosition * videoDuration));
+        const newTime = Math.round(Math.min(videoDuration, Math.max(startTime + 1, clampedPosition * videoDuration)));
         onEndTimeChange(newTime);
       }
     };
@@ -294,7 +294,7 @@ export default function ClipControls({
                   type="button"
                   variant="outline"
                   className="rounded-l-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                  onClick={() => onEndTimeChange(videoDuration)}
+                  onClick={() => onEndTimeChange(Math.round(videoDuration))}
                   title="Reset to end"
                 >
                   <SkipForward className="h-3.5 w-3.5" />
