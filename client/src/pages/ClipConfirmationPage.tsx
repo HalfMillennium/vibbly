@@ -1,30 +1,17 @@
-import { useQuery } from "@tanstack/react-query";
 import { useLocation, Link } from "wouter";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Clock, ExternalLink, Share2, Play, CheckCircle } from "lucide-react";
-import { formatTime, formatDate } from "@/lib/utils";
+import { ExternalLink, Share2, CheckCircle, Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import CreatePageLayout from "@/components/layouts/CreatePage";
-
-interface Clip {
-  id: number;
-  shareId: string;
-  clipTitle: string;
-  videoTitle: string;
-  videoId: string;
-  startTime: number;
-  endTime: number;
-  includeSubtitles: boolean;
-  createdAt: string;
-}
+import ConfettiGenerator from "confetti-js";
 
 export default function ClipConfirmationPage() {
   const { toast } = useToast();
   const [location] = useLocation();
   const [shareId, setShareId] = useState<string | null>(null);
+  const confettiRef = useRef<HTMLCanvasElement>(null);
 
   // Extract share ID from URL parameters
   useEffect(() => {
@@ -33,14 +20,42 @@ export default function ClipConfirmationPage() {
     setShareId(id);
   }, [location]);
 
-  const { data: clip, isLoading, error } = useQuery<Clip>({
-    queryKey: [`/api/clips/share/${shareId}`],
-    enabled: !!shareId,
-  });
+  // Trigger confetti animation when shareId is available
+  useEffect(() => {
+    if (shareId && confettiRef.current) {
+      const confettiSettings = {
+        target: confettiRef.current,
+        max: 80,
+        size: 1,
+        animate: true,
+        props: ['circle', 'square', 'triangle'],
+        colors: [[165, 104, 246], [139, 69, 19], [204, 204, 204], [80, 200, 120], [255, 69, 0]],
+        clock: 25,
+        rotate: true,
+        width: window.innerWidth,
+        height: window.innerHeight,
+        start_from_edge: false,
+        respawn: false
+      };
+      
+      const confetti = new ConfettiGenerator(confettiSettings);
+      confetti.render();
+      
+      // Stop confetti after 4 seconds
+      setTimeout(() => {
+        confetti.clear();
+      }, 4000);
+      
+      return () => {
+        confetti.clear();
+      };
+    }
+  }, [shareId]);
+
+  const clipUrl = shareId ? `${window.location.origin}/view/${shareId}` : '';
 
   const handleCopyLink = () => {
-    if (clip) {
-      const clipUrl = `${window.location.origin}/view/${clip.shareId}`;
+    if (clipUrl) {
       navigator.clipboard.writeText(clipUrl);
       toast({
         title: "Link copied!",
@@ -49,37 +64,22 @@ export default function ClipConfirmationPage() {
     }
   };
 
-  const handleWatchOriginal = () => {
-    if (clip) {
-      window.open(`https://youtube.com/watch?v=${clip.videoId}&t=${clip.startTime}s`, '_blank');
+  const handleOpenClip = () => {
+    if (shareId) {
+      window.open(`/view/${shareId}`, '_blank');
     }
   };
 
-  if (isLoading) {
-    return (
-      <CreatePageLayout>
-        <div className="max-w-2xl mx-auto px-4 py-8">
-          <div className="glass-card p-8 text-center">
-            <div className="animate-pulse">
-              <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded mb-4"></div>
-              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mx-auto"></div>
-            </div>
-          </div>
-        </div>
-      </CreatePageLayout>
-    );
-  }
-
-  if (error || !clip) {
+  if (!shareId) {
     return (
       <CreatePageLayout>
         <div className="max-w-2xl mx-auto px-4 py-8">
           <div className="glass-card p-8 text-center">
             <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-              Clip not found
+              Something went wrong
             </h1>
             <p className="text-gray-600 dark:text-gray-400 mb-6">
-              The clip you're looking for doesn't exist or has been removed.
+              We couldn't find your clip. Please try creating it again.
             </p>
             <Button asChild>
               <Link to="/create">Create New Clip</Link>
@@ -90,130 +90,83 @@ export default function ClipConfirmationPage() {
     );
   }
 
-  const clipDuration = clip.endTime - clip.startTime;
-
   return (
     <CreatePageLayout>
-      <div className="max-w-3xl mx-auto px-4 py-8 space-y-8">
+      {/* Confetti Canvas */}
+      <canvas
+        ref={confettiRef}
+        className="fixed inset-0 pointer-events-none z-50"
+        style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%' }}
+      />
+      
+      <div className="max-w-2xl mx-auto px-4 py-8 space-y-8">
         {/* Success Header */}
-        <div className="text-center space-y-4">
-          <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto">
-            <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
+        <div className="text-center space-y-6">
+          <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto animate-bounce">
+            <CheckCircle className="w-10 h-10 text-green-600 dark:text-green-400" />
           </div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-            Clip Created Successfully!
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Your clip is ready to share with the world
-          </p>
+          <div>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent mb-2">
+              Clip Created Successfully!
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400 text-lg">
+              Your clip is ready to share with the world
+            </p>
+          </div>
         </div>
 
-        {/* Clip Details Card */}
-        <Card className="glass-card overflow-hidden">
-          <div className="relative aspect-video">
-            <img
-              src={`https://img.youtube.com/vi/${clip.videoId}/maxresdefault.jpg`}
-              alt={clip.clipTitle}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-              <Link href={`/view/${clip.shareId}`}>
-                <Button
-                  size="lg"
-                  className="bg-white/90 hover:bg-white text-black rounded-full px-6"
-                >
-                  <Play className="w-5 h-5 mr-2" />
-                  Watch Clip
-                </Button>
-              </Link>
-            </div>
-            <div className="absolute bottom-4 right-4">
-              <Badge variant="secondary" className="bg-black/70 text-white">
-                <Clock className="w-3 h-3 mr-1" />
-                {formatTime(clipDuration)}
-              </Badge>
-            </div>
-          </div>
-
+        {/* Share URL Card */}
+        <Card className="glass-card">
           <CardContent className="p-6 space-y-4">
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                {clip.clipTitle}
+            <div className="text-center">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                Share Your Clip
               </h2>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
-                from "{clip.videoTitle}"
-              </p>
-            </div>
-
-            <div className="grid grid-cols-3 gap-4 text-center py-4 border-t border-gray-200 dark:border-gray-700">
-              <div className="space-y-1">
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Duration
-                </div>
-                <div className="font-semibold text-gray-900 dark:text-gray-100">
-                  {formatTime(clipDuration)}
-                </div>
-              </div>
               
-              <div className="space-y-1">
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Start Time
-                </div>
-                <div className="font-semibold text-gray-900 dark:text-gray-100">
-                  {formatTime(clip.startTime)}
-                </div>
-              </div>
-              
-              <div className="space-y-1">
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  End Time
-                </div>
-                <div className="font-semibold text-gray-900 dark:text-gray-100">
-                  {formatTime(clip.endTime)}
+              {/* URL Display */}
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border-2 border-dashed border-gray-200 dark:border-gray-700">
+                <div className="flex items-center gap-2 text-sm font-mono text-gray-700 dark:text-gray-300 break-all">
+                  <span className="flex-1">{clipUrl}</span>
                 </div>
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 pt-4">
+            <div className="flex flex-col sm:flex-row gap-3">
               <Button
                 onClick={handleCopyLink}
                 className="flex-1"
                 variant="outline"
               >
-                <Share2 className="w-4 h-4 mr-2" />
-                Copy Share Link
+                <Copy className="w-4 h-4 mr-2" />
+                Copy Link
               </Button>
               
               <Button
-                onClick={handleWatchOriginal}
+                onClick={handleOpenClip}
                 className="flex-1"
-                variant="outline"
+                variant="default"
               >
                 <ExternalLink className="w-4 h-4 mr-2" />
-                Watch Original
-              </Button>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Button asChild className="flex-1" variant="default">
-                <Link to="/my-clips">
-                  View My Clips
-                </Link>
-              </Button>
-              
-              <Button asChild className="flex-1" variant="outline">
-                <Link to="/create">
-                  Create Another Clip
-                </Link>
+                Open Clip
               </Button>
             </div>
           </CardContent>
         </Card>
 
-        {/* Created Date */}
-        <div className="text-center text-sm text-gray-500 dark:text-gray-400">
-          Created on {formatDate(clip.createdAt)}
+        {/* Navigation Buttons */}
+        <div className="flex flex-col sm:flex-row gap-3">
+          <Button asChild className="flex-1" variant="default">
+            <Link to="/my-clips">
+              View My Clips
+            </Link>
+          </Button>
+          
+          <Button asChild className="flex-1" variant="outline">
+            <Link to="/create">
+              Create Another Clip
+            </Link>
+          </Button>
         </div>
       </div>
     </CreatePageLayout>
