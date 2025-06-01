@@ -4,6 +4,7 @@ import VideoInputForm from "@/components/VideoInputForm";
 import VideoPlayer from "@/components/VideoPlayer";
 import ClipControls from "@/components/ClipControls";
 import ClipInfo from "@/components/ClipInfo";
+import ClipPreviewModal from "@/components/ClipPreviewModal";
 import { useToast } from "@/hooks/use-toast";
 import useYouTubePlayer from "@/hooks/useYouTubePlayer";
 
@@ -20,6 +21,7 @@ export default function CreateClipPage() {
   const [loopClip, setLoopClip] = useState<boolean>(false);
   const [clipCreated, setClipCreated] = useState<boolean>(false);
   const [clipId, setClipId] = useState<string | null>(null);
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState<boolean>(false);
 
   // Reference to video player container
   const videoPlayerRef = useRef<HTMLDivElement>(null);
@@ -111,16 +113,8 @@ export default function CreateClipPage() {
 
   // Function to preview the clip
   const handlePreviewClip = () => {
-    if (startTime >= 0 && endTime > startTime) {
-      // Always seek to the start time first
-      seekTo(startTime);
-      // Then ensure the video is playing
-      play();
-
-      toast({
-        title: "Previewing clip",
-        description: `Playing clip from ${startTime.toFixed(1)}s to ${endTime.toFixed(1)}s`,
-      });
+    if (startTime >= 0 && endTime > startTime && videoId) {
+      setIsPreviewModalOpen(true);
     } else {
       toast({
         title: "Invalid clip selection",
@@ -177,6 +171,19 @@ export default function CreateClipPage() {
               </div>
             </div>
           </div>
+        )}
+
+        {/* Clip Preview Modal */}
+        {videoId && (
+          <ClipPreviewModal
+            isOpen={isPreviewModalOpen}
+            onClose={() => setIsPreviewModalOpen(false)}
+            videoId={videoId}
+            startTime={startTime}
+            endTime={endTime}
+            clipTitle={clipTitle || videoTitle}
+            loopClip={loopClip}
+          />
         )}
     </CreatePageLayout>
   );
