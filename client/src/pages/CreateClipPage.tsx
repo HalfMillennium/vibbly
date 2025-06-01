@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { useLocation } from "wouter";
 import CreatePageLayout from "@/components/layouts/CreatePage";
 import VideoInputForm from "@/components/VideoInputForm";
 import VideoPlayer from "@/components/VideoPlayer";
@@ -10,6 +11,7 @@ import useYouTubePlayer from "@/hooks/useYouTubePlayer";
 
 export default function CreateClipPage() {
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
   const [videoUrl, setVideoUrl] = useState<string>("");
   const [videoId, setVideoId] = useState<string | null>(null);
   const [videoTitle, setVideoTitle] = useState<string>("");
@@ -81,12 +83,8 @@ export default function CreateClipPage() {
 
       if (response.ok) {
         const data = await response.json();
-        setClipId(data.id);
-        setClipCreated(true);
-        toast({
-          title: "Success!",
-          description: "Your clip was created successfully.",
-        });
+        // Redirect to confirmation page with clip ID
+        setLocation(`/clip-created?id=${data.id}`);
       } else {
         throw new Error("Failed to create clip");
       }

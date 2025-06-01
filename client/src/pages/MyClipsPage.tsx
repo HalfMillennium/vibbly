@@ -15,7 +15,8 @@ interface Clip {
   startTime: number;
   endTime: number;
   includeSubtitles: boolean;
-  createdAt: Date;
+  createdByUserId: string;
+  createdAt: string;
 }
 
 export default function MyClipsPage() {

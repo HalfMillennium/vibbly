@@ -8,6 +8,7 @@ import NotFound from "@/pages/not-found";
 import CreatePage from "@/pages/CreateClipPage";
 import LandingPage from "@/pages/LandingPage";
 import MyClipsPage from "@/pages/MyClipsPage";
+import ClipConfirmationPage from "@/pages/ClipConfirmationPage";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { SignIn, useUser } from "@clerk/clerk-react";
 
@@ -55,6 +56,26 @@ function Router() {
           </div>
         }>
           <MyClipsPage />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/clip-created">
+        <ProtectedRoute fallback={
+          <div className="flex items-center justify-center min-h-screen">
+            <div className="w-full max-w-md">
+              <SignIn 
+                appearance={{
+                  elements: {
+                    rootBox: "mx-auto",
+                    card: "bg-background border shadow-lg"
+                  }
+                }}
+                signUpUrl="/clip-created"
+                redirectUrl="/clip-created"
+              />
+            </div>
+          </div>
+        }>
+          <ClipConfirmationPage />
         </ProtectedRoute>
       </Route>
       <Route component={NotFound} />
