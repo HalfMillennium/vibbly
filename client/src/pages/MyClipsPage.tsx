@@ -21,7 +21,7 @@ interface Clip {
 
 export default function MyClipsPage() {
   const { data: clips, isLoading } = useQuery<Clip[]>({
-    queryKey: ['/api/clips'],
+    queryKey: ["/api/clips"],
   });
 
   if (isLoading) {
@@ -70,9 +70,12 @@ export default function MyClipsPage() {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 flex flex-col flex-1">
             {clips.map((clip) => (
-              <Card key={clip.id} className="glass-card group hover:shadow-lg transition-all duration-200">
+              <Card
+                key={clip.id}
+                className="glass-card group hover:shadow-lg transition-all duration-200 flex flex-col flex-1"
+              >
                 <div className="relative aspect-video overflow-hidden rounded-t-lg">
                   <img
                     src={`https://img.youtube.com/vi/${clip.videoId}/maxresdefault.jpg`}
@@ -80,7 +83,11 @@ export default function MyClipsPage() {
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
                   />
                   <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
-                    <Button size="icon" variant="secondary" className="rounded-full">
+                    <Button
+                      size="icon"
+                      variant="secondary"
+                      className="rounded-full"
+                    >
                       <Play className="h-4 w-4" />
                     </Button>
                   </div>
@@ -91,34 +98,50 @@ export default function MyClipsPage() {
                     </Badge>
                   </div>
                 </div>
-                
-                <CardContent className="p-4">
-                  <h3 className="font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">
-                    {clip.clipTitle}
-                  </h3>
-                  
-                  <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-3">
-                    <span>{formatTime(clip.startTime)} - {formatTime(clip.endTime)}</span>
-                    {clip.includeSubtitles && (
-                      <Badge variant="outline" className="text-xs">CC</Badge>
-                    )}
+
+                <CardContent className="p-4 flex flex-col flex-1 justify-between">
+                  <div className="flex flex-col">
+                    <h3 className="font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">
+                      {clip.clipTitle}
+                    </h3>
+
+                    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-3">
+                      <span>
+                        {formatTime(clip.startTime)} -{" "}
+                        {formatTime(clip.endTime)}
+                      </span>
+                      {clip.includeSubtitles && (
+                        <Badge variant="outline" className="text-xs">
+                          CC
+                        </Badge>
+                      )}
+                    </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-2">
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
+                    <Button
+                      size="sm"
+                      variant="outline"
                       className="flex-1 rounded-xl"
-                      onClick={() => window.open(`https://youtube.com/watch?v=${clip.videoId}&t=${clip.startTime}s`, '_blank')}
+                      onClick={() =>
+                        window.open(
+                          `https://youtube.com/watch?v=${clip.videoId}&t=${clip.startTime}s`,
+                          "_blank",
+                        )
+                      }
                     >
                       <ExternalLink className="h-3 w-3 mr-1" />
                       Watch
                     </Button>
-                    <Button 
-                      size="sm" 
-                      variant="ghost" 
+                    <Button
+                      size="sm"
+                      variant="ghost"
                       className="rounded-xl"
-                      onClick={() => navigator.clipboard.writeText(`${window.location.origin}/clip/${clip.shareId}`)}
+                      onClick={() =>
+                        navigator.clipboard.writeText(
+                          `${window.location.origin}/clip/${clip.shareId}`,
+                        )
+                      }
                     >
                       <Share2 className="h-3 w-3" />
                     </Button>
