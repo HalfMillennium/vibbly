@@ -38,7 +38,7 @@ export default function ViewClipPage() {
   }, [location]);
 
   const { data: clip, isLoading, error } = useQuery<Clip>({
-    queryKey: ['/api/clips/share', shareId],
+    queryKey: [`/api/clips/share/${shareId}`],
     enabled: !!shareId,
   });
 

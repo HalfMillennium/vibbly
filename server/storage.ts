@@ -6,7 +6,9 @@ export interface IStorage {
   getClip(id: number): Promise<Clip | undefined>;
   getClipByShareId(shareId: string): Promise<Clip | undefined>;
   getClipsByUserId(userId: string): Promise<Clip[]>;
-  createClip(clip: InsertClip & { shareId: string; createdByUserId: string }): Promise<Clip>;
+  createClip(
+    clip: InsertClip & { shareId: string; createdByUserId: string },
+  ): Promise<Clip>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -16,20 +18,25 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getClipByShareId(shareId: string): Promise<Clip | undefined> {
-    const [clip] = await db.select().from(clips).where(eq(clips.shareId, shareId));
+    const [clip] = await db
+      .select()
+      .from(clips)
+      .where(eq(clips.shareId, shareId));
     return clip || undefined;
   }
 
   async getClipsByUserId(userId: string): Promise<Clip[]> {
-    const userClips = await db.select().from(clips).where(eq(clips.createdByUserId, userId));
+    const userClips = await db
+      .select()
+      .from(clips)
+      .where(eq(clips.createdByUserId, userId));
     return userClips;
   }
 
-  async createClip(insertClip: InsertClip & { shareId: string; createdByUserId: string }): Promise<Clip> {
-    const [clip] = await db
-      .insert(clips)
-      .values(insertClip)
-      .returning();
+  async createClip(
+    insertClip: InsertClip & { shareId: string; createdByUserId: string },
+  ): Promise<Clip> {
+    const [clip] = await db.insert(clips).values(insertClip).returning();
     return clip;
   }
 }
