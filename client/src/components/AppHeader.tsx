@@ -65,20 +65,11 @@ export default function AppHeader() {
                 appearance={{
                   elements: {
                     avatarBox: "w-8 h-8",
-                    userButtonPopoverCard: "bg-background border shadow-lg dark:bg-gray-800 dark:border-gray-700",
-                    userButtonPopoverActions: "bg-background dark:bg-gray-800",
-                    userButtonPopoverActionButton: "text-foreground hover:bg-muted dark:text-gray-200 dark:hover:bg-gray-700",
-                    userButtonPopoverActionButtonText: "text-foreground dark:text-gray-200",
-                    userButtonPopoverActionButtonIcon: "text-foreground dark:text-gray-200"
-                  },
-                  variables: {
-                    colorPrimary: "hsl(var(--primary))",
-                    colorBackground: "hsl(var(--background))",
-                    colorText: "hsl(var(--foreground))",
-                    colorTextSecondary: "hsl(var(--muted-foreground))",
-                    colorInputBackground: "hsl(var(--input))",
-                    colorInputText: "hsl(var(--foreground))",
-                    borderRadius: "0.5rem"
+                    userButtonPopoverCard: "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg",
+                    userButtonPopoverActions: "bg-white dark:bg-gray-800",
+                    userButtonPopoverActionButton: "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700",
+                    userButtonPopoverActionButtonText: "text-gray-700 dark:text-gray-200",
+                    userButtonPopoverActionButtonIcon: "text-gray-500 dark:text-gray-400"
                   }
                 }}
                 showName={false}
@@ -88,26 +79,17 @@ export default function AppHeader() {
                 mode="modal"
                 appearance={{
                   elements: {
-                    modalContent: "bg-background dark:bg-gray-800",
-                    card: "bg-background dark:bg-gray-800 border dark:border-gray-700",
-                    headerTitle: "text-foreground dark:text-gray-200",
-                    headerSubtitle: "text-muted-foreground dark:text-gray-400",
-                    socialButtonsBlockButton: "border dark:border-gray-600 text-foreground dark:text-gray-200 hover:bg-muted dark:hover:bg-gray-700",
-                    dividerLine: "bg-border dark:bg-gray-600",
-                    dividerText: "text-muted-foreground dark:text-gray-400",
-                    formFieldInput: "bg-input dark:bg-gray-700 border dark:border-gray-600 text-foreground dark:text-gray-200",
-                    formFieldLabel: "text-foreground dark:text-gray-200",
-                    identityPreviewText: "text-foreground dark:text-gray-200",
-                    formButtonPrimary: "bg-primary text-primary-foreground hover:bg-primary/90"
-                  },
-                  variables: {
-                    colorPrimary: "hsl(var(--primary))",
-                    colorBackground: "hsl(var(--background))",
-                    colorText: "hsl(var(--foreground))",
-                    colorTextSecondary: "hsl(var(--muted-foreground))",
-                    colorInputBackground: "hsl(var(--input))",
-                    colorInputText: "hsl(var(--foreground))",
-                    borderRadius: "0.5rem"
+                    modalContent: "bg-white dark:bg-gray-900",
+                    card: "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700",
+                    headerTitle: "text-gray-900 dark:text-gray-100",
+                    headerSubtitle: "text-gray-600 dark:text-gray-400",
+                    socialButtonsBlockButton: "border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700",
+                    dividerLine: "bg-gray-200 dark:bg-gray-600",
+                    dividerText: "text-gray-500 dark:text-gray-400",
+                    formFieldInput: "bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100",
+                    formFieldLabel: "text-gray-700 dark:text-gray-300",
+                    identityPreviewText: "text-gray-900 dark:text-gray-100",
+                    formButtonPrimary: "bg-blue-600 hover:bg-blue-700 text-white"
                   }
                 }}
               >
