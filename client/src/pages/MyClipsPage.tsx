@@ -7,7 +7,7 @@ import { formatTime, formatDate } from "@/lib/utils";
 import CreatePageLayout from "@/components/layouts/CreatePage";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 
 interface Clip {
   id: number;
@@ -31,9 +31,7 @@ export default function MyClipsPage() {
 
   const deleteClipMutation = useMutation({
     mutationFn: async (clipId: number) => {
-      return await apiRequest(`/api/clips/${clipId}`, {
-        method: "DELETE",
-      });
+      return await apiRequest("DELETE", `/api/clips/${clipId}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/clips"] });
@@ -176,11 +174,20 @@ export default function MyClipsPage() {
                       className="rounded-xl"
                       onClick={() =>
                         navigator.clipboard.writeText(
-                          `${window.location.origin}/clip/${clip.shareId}`,
+                          `${window.location.origin}/view/${clip.shareId}`,
                         )
                       }
                     >
                       <Share2 className="h-3 w-3" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="rounded-xl text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
+                      onClick={() => handleDeleteClip(clip.id, clip.clipTitle)}
+                      disabled={deleteClipMutation.isPending}
+                    >
+                      <Trash2 className="h-3 w-3" />
                     </Button>
                   </div>
                 </CardContent>
