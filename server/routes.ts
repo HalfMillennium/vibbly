@@ -53,6 +53,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { userId } = getAuth(req);
       
+      console.log("Authentication result:", { userId, type: typeof userId });
+      
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
@@ -70,6 +72,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Generate a unique share ID
       const shareId = generateId(12);
+      
+      console.log("About to create clip with:", { 
+        clipData, 
+        shareId, 
+        createdByUserId: userId,
+        userIdType: typeof userId 
+      });
       
       const clip = await storage.createClip({
         ...clipData,
