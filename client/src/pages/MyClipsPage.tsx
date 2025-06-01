@@ -96,11 +96,15 @@ export default function MyClipsPage() {
                       <Clock className="h-3 w-3 mr-1" />
                       {formatTime(clip.endTime - clip.startTime)}
                     </Badge>
+                    <Badge variant="secondary" className="text-xs">
+                      <Clock className="h-3 w-3 mr-1" />
+                      {formatTime(clip.endTime - clip.startTime)}
+                    </Badge>
                   </div>
                 </div>
 
                 <CardContent className="p-4 flex flex-col flex-1 justify-between">
-                  <div className="flex flex-col">
+                  <div className="flex flex-col flex-1 justify-between">
                     <h3 className="font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">
                       {clip.clipTitle}
                     </h3>
