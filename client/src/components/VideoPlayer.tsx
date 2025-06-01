@@ -1,5 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import { Play, Pause, Volume2, VolumeX, Expand, Clock, Scissors } from "lucide-react";
+import {
+  Play,
+  Pause,
+  Volume2,
+  VolumeX,
+  Expand,
+  Clock,
+  Scissors,
+} from "lucide-react";
 import useYouTubePlayer from "@/hooks/useYouTubePlayer";
 import { formatTime } from "@/lib/utils";
 
@@ -27,7 +35,7 @@ export default function VideoPlayer({
   const [currentTime, setCurrentTime] = useState(0);
   const [progress, setProgress] = useState(0);
 
-  const { 
+  const {
     player,
     loadVideo,
     play,
@@ -47,7 +55,7 @@ export default function VideoPlayer({
       if (videoData?.title) {
         onVideoTitleChange(videoData.title);
       }
-      
+
       const duration = getDuration();
       if (duration) {
         onVideoDurationChange(duration);
@@ -119,58 +127,66 @@ export default function VideoPlayer({
     <div className="mb-8 video-container-wrapper">
       <div className="video-container" ref={playerRef}>
         {/* This is the container for the YouTube iframe */}
-        <div id="youtube-player" className="w-full h-full bg-black" key="youtube-player-container"></div>
-        
+        <div
+          id="youtube-player"
+          className="w-full h-full bg-black"
+          key="youtube-player-container"
+        ></div>
+
         {/* Clip Indicator Overlay */}
         {playerReady && startTime > 0 && endTime > 0 && (
           <div className="absolute top-4 left-4 bg-black/70 text-white px-3 py-1.5 rounded-full text-xs flex items-center">
             <Scissors className="h-3 w-3 mr-1.5" />
-            <span className="font-medium">{formatTime(endTime - startTime)}</span>
+            <span className="font-medium">
+              {formatTime(endTime - startTime)}
+            </span>
           </div>
         )}
-        
+
         {/* Custom Video Controls Overlay - Only show when player is ready */}
         {playerReady && (
           <div className="video-controls">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center space-x-3">
-                <button 
-                  onClick={handleTogglePlay} 
+                <button
+                  onClick={handleTogglePlay}
                   className="text-white hover:text-primary transition"
                 >
-                  {isPlaying ? 
-                    <Pause className="h-5 w-5 sm:h-6 sm:w-6" /> : 
+                  {isPlaying ? (
+                    <Pause className="h-5 w-5 sm:h-6 sm:w-6" />
+                  ) : (
                     <Play className="h-5 w-5 sm:h-6 sm:w-6" />
-                  }
+                  )}
                 </button>
-                
-                <button 
-                  onClick={handleToggleMute} 
+
+                <button
+                  onClick={handleToggleMute}
                   className="text-white hover:text-primary transition hidden sm:block"
                 >
-                  {isMuted ? 
-                    <VolumeX className="h-5 w-5" /> : 
+                  {isMuted ? (
+                    <VolumeX className="h-5 w-5" />
+                  ) : (
                     <Volume2 className="h-5 w-5" />
-                  }
+                  )}
                 </button>
-                
+
                 <div className="text-xs sm:text-sm font-medium">
                   <span>{formatTime(currentTime)}</span>
                   <span className="mx-1">/</span>
                   <span>{formatTime(totalDuration)}</span>
                 </div>
               </div>
-              
-              <button 
-                onClick={handleToggleFullscreen} 
+
+              <button
+                onClick={handleToggleFullscreen}
                 className="text-white hover:text-primary transition"
               >
                 <Expand className="h-5 w-5" />
               </button>
             </div>
-            
+
             {/* Video Progress Bar */}
-            <div 
+            <div
               className="w-full h-1.5 bg-gray-600/50 rounded-full overflow-hidden cursor-pointer"
               onClick={(e) => {
                 const rect = e.currentTarget.getBoundingClientRect();
@@ -179,36 +195,14 @@ export default function VideoPlayer({
                 seekTo(newTime);
               }}
             >
-              <div 
-                className="h-full rounded-full bg-primary" 
+              <div
+                className="h-full rounded-full bg-primary"
                 style={{ width: `${progress}%` }}
               ></div>
             </div>
           </div>
         )}
       </div>
-      
-      {/* Show clipable region beneath video */}
-      {totalDuration > 0 && (
-        <div className="mt-2 px-1">
-          <div className="relative h-8 w-full">
-            <div className="absolute inset-0 flex items-center justify-between">
-              <div className="relative w-full h-1.5 bg-gray-200 rounded-full">
-                {/* Mark the start and end time */}
-                {startTime > 0 && (
-                  <div 
-                    className="absolute top-0 bottom-0 bg-primary/30 rounded-full"
-                    style={{ 
-                      left: `${(startTime / totalDuration) * 100}%`,
-                      right: `${100 - ((endTime / totalDuration) * 100)}%` 
-                    }}
-                  ></div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
