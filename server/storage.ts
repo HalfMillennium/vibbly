@@ -1,6 +1,6 @@
 import { clips, type Clip, type InsertClip } from "@shared/schema";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 
 export interface IStorage {
   getClip(id: number): Promise<Clip | undefined>;
@@ -9,6 +9,7 @@ export interface IStorage {
   createClip(
     clip: InsertClip & { shareId: string; createdByUserId: string },
   ): Promise<Clip>;
+  deleteClip(id: number, userId: string): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -38,6 +39,13 @@ export class DatabaseStorage implements IStorage {
   ): Promise<Clip> {
     const [clip] = await db.insert(clips).values(insertClip).returning();
     return clip;
+  }
+
+  async deleteClip(id: number, userId: string): Promise<boolean> {
+    const result = await db
+      .delete(clips)
+      .where(and(eq(clips.id, id), eq(clips.createdByUserId, userId)));
+    return (result.rowCount || 0) > 0;
   }
 }
 

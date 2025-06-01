@@ -1,11 +1,13 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Play, Clock, Share2, ExternalLink } from "lucide-react";
+import { Play, Clock, Share2, ExternalLink, Trash2 } from "lucide-react";
 import { formatTime, formatDate } from "@/lib/utils";
 import CreatePageLayout from "@/components/layouts/CreatePage";
 import { Link } from "wouter";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 interface Clip {
   id: number;
@@ -21,9 +23,39 @@ interface Clip {
 }
 
 export default function MyClipsPage() {
+  const { toast } = useToast();
+  
   const { data: clips, isLoading } = useQuery<Clip[]>({
     queryKey: ["/api/clips"],
   });
+
+  const deleteClipMutation = useMutation({
+    mutationFn: async (clipId: number) => {
+      return await apiRequest(`/api/clips/${clipId}`, {
+        method: "DELETE",
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/clips"] });
+      toast({
+        title: "Clip deleted",
+        description: "Your clip has been successfully deleted",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to delete clip. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleDeleteClip = (clipId: number, clipTitle: string) => {
+    if (window.confirm(`Are you sure you want to delete "${clipTitle}"? This action cannot be undone.`)) {
+      deleteClipMutation.mutate(clipId);
+    }
+  };
 
   if (isLoading) {
     return (

@@ -105,6 +105,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete("/api/clips/:id", async (req, res) => {
+    try {
+      const { userId } = getAuth(req);
+
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const clipId = parseInt(req.params.id);
+      if (isNaN(clipId)) {
+        return res.status(400).json({ message: "Invalid clip ID" });
+      }
+
+      const success = await storage.deleteClip(clipId, userId);
+      
+      if (!success) {
+        return res.status(404).json({ message: "Clip not found or unauthorized" });
+      }
+
+      res.status(200).json({ message: "Clip deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting clip:", error);
+      res.status(500).json({ message: "Failed to delete clip" });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;
