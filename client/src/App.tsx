@@ -7,12 +7,35 @@ import { ThemeProvider } from "@/components/theme-provider";
 import NotFound from "@/pages/not-found";
 import CreatePage from "@/pages/CreateClipPage";
 import LandingPage from "@/pages/LandingPage";
+import ProtectedRoute from "@/components/ProtectedRoute";
+import { SignIn, useUser } from "@clerk/clerk-react";
 
 function Router() {
+  const { isSignedIn } = useUser();
+
   return (
     <Switch>
       <Route path="/" component={LandingPage} />
-      <Route path="/create" component={CreatePage} />
+      <Route path="/create">
+        <ProtectedRoute fallback={
+          <div className="flex items-center justify-center min-h-screen">
+            <div className="w-full max-w-md">
+              <SignIn 
+                appearance={{
+                  elements: {
+                    rootBox: "mx-auto",
+                    card: "bg-background border shadow-lg"
+                  }
+                }}
+                signUpUrl="/create"
+                redirectUrl="/create"
+              />
+            </div>
+          </div>
+        }>
+          <CreatePage />
+        </ProtectedRoute>
+      </Route>
       <Route component={NotFound} />
     </Switch>
   );
