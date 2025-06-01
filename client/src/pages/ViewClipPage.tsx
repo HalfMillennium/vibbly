@@ -32,23 +32,27 @@ export default function ViewClipPage() {
 
   // Extract share ID from URL path
   useEffect(() => {
-    const pathSegments = location.split('/');
+    const pathSegments = location.split("/");
     const id = pathSegments[pathSegments.length - 1];
     setShareId(id);
   }, [location]);
 
-  const { data: clip, isLoading, error } = useQuery<Clip>({
+  const {
+    data: clip,
+    isLoading,
+    error,
+  } = useQuery<Clip>({
     queryKey: [`/api/clips/share/${shareId}`],
     enabled: !!shareId,
   });
 
-  const { 
-    player, 
-    loadVideo, 
+  const {
+    player,
+    loadVideo,
     play,
     pause,
     seekTo,
-    getCurrentTime: getPlayerCurrentTime 
+    getCurrentTime: getPlayerCurrentTime,
   } = useYouTubePlayer(containerRef);
 
   // Load video when clip data is available
@@ -61,6 +65,7 @@ export default function ViewClipPage() {
             player.seekTo(clip.startTime);
             setCurrentTime(clip.startTime);
           }
+          handleRestart();
         }, 500);
       });
     }
@@ -91,7 +96,7 @@ export default function ViewClipPage() {
 
     const checkClipBounds = () => {
       const time = currentTime;
-      
+
       if (time >= clip.endTime) {
         if (loopEnabled) {
           seekTo(clip.startTime);
@@ -133,7 +138,10 @@ export default function ViewClipPage() {
 
   const openOriginalVideo = () => {
     if (!clip) return;
-    window.open(`https://youtube.com/watch?v=${clip.videoId}&t=${clip.startTime}s`, '_blank');
+    window.open(
+      `https://youtube.com/watch?v=${clip.videoId}&t=${clip.startTime}s`,
+      "_blank",
+    );
   };
 
   if (isLoading) {
@@ -141,7 +149,9 @@ export default function ViewClipPage() {
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-purple-900/20 dark:to-indigo-900/30 flex items-center justify-center">
         <div className="text-center space-y-4">
           <div className="w-16 h-16 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="text-gray-600 dark:text-gray-300 text-lg font-medium">Loading clip...</p>
+          <p className="text-gray-600 dark:text-gray-300 text-lg font-medium">
+            Loading clip...
+          </p>
         </div>
       </div>
     );
@@ -158,8 +168,8 @@ export default function ViewClipPage() {
           <p className="text-gray-600 dark:text-gray-400 mb-6">
             The clip you're looking for doesn't exist or may have been removed.
           </p>
-          <Button 
-            onClick={() => window.location.href = '/'}
+          <Button
+            onClick={() => (window.location.href = "/")}
             className="bg-purple-600 hover:bg-purple-700 text-white"
           >
             Go Home
@@ -243,7 +253,9 @@ export default function ViewClipPage() {
                   <div className="w-full h-1.5 bg-gray-600/50 rounded-full overflow-hidden">
                     <div
                       className="h-full rounded-full bg-primary transition-all duration-100"
-                      style={{ width: `${Math.max(0, Math.min(100, progress))}%` }}
+                      style={{
+                        width: `${Math.max(0, Math.min(100, progress))}%`,
+                      }}
                     />
                   </div>
                 </div>
@@ -276,7 +288,7 @@ export default function ViewClipPage() {
                   size="sm"
                   className="glass-button border-white/30 dark:border-white/20"
                 >
-                  <RotateCcw className="w-4 h-4 mr-2" />
+                  <RotateCcw className="w-4 h-4" />
                   Restart
                 </Button>
 
@@ -286,7 +298,7 @@ export default function ViewClipPage() {
                   size="sm"
                   className="glass-button border-white/30 dark:border-white/20"
                 >
-                  <ExternalLink className="w-4 h-4 mr-2" />
+                  <ExternalLink className="w-4 h-4" />
                   Watch on YouTube
                 </Button>
               </div>
@@ -302,7 +314,7 @@ export default function ViewClipPage() {
                     {formatTime(clipDuration)}
                   </div>
                 </div>
-                
+
                 <div className="space-y-1">
                   <div className="text-sm text-gray-500 dark:text-gray-400">
                     Start Time
@@ -311,7 +323,7 @@ export default function ViewClipPage() {
                     {formatTime(clip.startTime)}
                   </div>
                 </div>
-                
+
                 <div className="space-y-1">
                   <div className="text-sm text-gray-500 dark:text-gray-400">
                     End Time
@@ -329,8 +341,8 @@ export default function ViewClipPage() {
         <div className="text-center mt-12">
           <p className="text-gray-500 dark:text-gray-400 text-sm">
             Create your own clips at{" "}
-            <a 
-              href="/" 
+            <a
+              href="/"
               className="text-purple-600 dark:text-purple-400 hover:underline font-medium"
             >
               Vibbly

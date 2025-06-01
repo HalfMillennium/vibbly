@@ -6,7 +6,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { formatTime, parseTimeInput } from "@/lib/utils";
-import { StepBack, StepForward, Play, ChevronDown, ChevronUp, Scissors, SkipBack, SkipForward, Eye } from "lucide-react";
+import {
+  View,
+  Play,
+  ChevronDown,
+  ChevronUp,
+  SkipBack,
+  SkipForward,
+} from "lucide-react";
 
 interface ClipControlsProps {
   videoDuration: number;
@@ -39,10 +46,14 @@ export default function ClipControls({
   onPreviewClip,
   onPlayClip,
 }: ClipControlsProps) {
-  const [startTimeDisplay, setStartTimeDisplay] = useState(formatTime(startTime));
-  const [endTimeDisplay, setEndTimeDisplay] = useState(formatTime(endTime || videoDuration));
+  const [startTimeDisplay, setStartTimeDisplay] = useState(
+    formatTime(startTime),
+  );
+  const [endTimeDisplay, setEndTimeDisplay] = useState(
+    formatTime(endTime || videoDuration),
+  );
   const [advancedOptionsOpen, setAdvancedOptionsOpen] = useState(false);
-  
+
   // References for the DOM elements and tracking drag state
   const trackRef = useRef<HTMLDivElement>(null);
   const startMarkerRef = useRef<HTMLDivElement>(null);
@@ -66,7 +77,9 @@ export default function ClipControls({
     }
   }, [videoDuration, startTime, endTime, onEndTimeChange]);
 
-  const handleStartTimeInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleStartTimeInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     setStartTimeDisplay(e.target.value);
   };
 
@@ -85,7 +98,11 @@ export default function ClipControls({
 
   const handleEndTimeInputBlur = () => {
     const parsedTime = parseTimeInput(endTimeDisplay);
-    if (parsedTime !== null && parsedTime > startTime && parsedTime <= videoDuration) {
+    if (
+      parsedTime !== null &&
+      parsedTime > startTime &&
+      parsedTime <= videoDuration
+    ) {
       onEndTimeChange(parsedTime);
     } else {
       setEndTimeDisplay(formatTime(endTime || videoDuration));
@@ -94,8 +111,10 @@ export default function ClipControls({
 
   // Calculate position of markers on timeline
   const startPosition = videoDuration ? (startTime / videoDuration) * 100 : 0;
-  const endPosition = videoDuration ? ((endTime || videoDuration) / videoDuration) * 100 : 100;
-  
+  const endPosition = videoDuration
+    ? ((endTime || videoDuration) / videoDuration) * 100
+    : 100;
+
   // Generate time indicators for the timeline
   const timeIndicators = [];
   if (videoDuration) {
@@ -106,7 +125,7 @@ export default function ClipControls({
         timeIndicators.push(
           <span key={i} className="text-xs text-gray-500 whitespace-nowrap">
             {formatTime(i)}
-          </span>
+          </span>,
         );
       }
     }
@@ -118,271 +137,303 @@ export default function ClipControls({
     const handleMove = (e: MouseEvent | TouchEvent) => {
       if (!trackRef.current || !videoDuration) return;
       if (!isDraggingStartRef.current && !isDraggingEndRef.current) return;
-      
+
       // Prevent default behavior to avoid text selection
       e.preventDefault();
-      
+
       // Calculate position
       const rect = trackRef.current.getBoundingClientRect();
-      const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+      const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
       const position = (clientX - rect.left) / rect.width;
       const clampedPosition = Math.max(0, Math.min(1, position));
-      
+
       // Update times based on which marker is being dragged
       if (isDraggingStartRef.current) {
-        const newTime = Math.round(Math.max(0, Math.min(clampedPosition * videoDuration, endTime - 1)));
+        const newTime = Math.round(
+          Math.max(0, Math.min(clampedPosition * videoDuration, endTime - 1)),
+        );
         onStartTimeChange(newTime);
       } else if (isDraggingEndRef.current) {
-        const newTime = Math.round(Math.min(videoDuration, Math.max(startTime + 1, clampedPosition * videoDuration)));
+        const newTime = Math.round(
+          Math.min(
+            videoDuration,
+            Math.max(startTime + 1, clampedPosition * videoDuration),
+          ),
+        );
         onEndTimeChange(newTime);
       }
     };
-    
+
     // Handler for ending the drag operation
     const handleEnd = (e: MouseEvent | TouchEvent) => {
       e.preventDefault();
       isDraggingStartRef.current = false;
       isDraggingEndRef.current = false;
-      
+
       // Re-enable text selection
-      document.body.style.userSelect = '';
+      document.body.style.userSelect = "";
     };
-    
+
     // Start drag operations
     const startStartDrag = (e: MouseEvent | TouchEvent) => {
       e.preventDefault();
       isDraggingStartRef.current = true;
       isDraggingEndRef.current = false;
       // Disable text selection during drag
-      document.body.style.userSelect = 'none';
+      document.body.style.userSelect = "none";
     };
-    
+
     const startEndDrag = (e: MouseEvent | TouchEvent) => {
       e.preventDefault();
       isDraggingStartRef.current = false;
       isDraggingEndRef.current = true;
       // Disable text selection during drag
-      document.body.style.userSelect = 'none';
+      document.body.style.userSelect = "none";
     };
-    
+
     // Add event listeners to the markers
     const startMarker = startMarkerRef.current;
     const endMarker = endMarkerRef.current;
-    
+
     if (startMarker) {
-      startMarker.addEventListener('mousedown', startStartDrag);
-      startMarker.addEventListener('touchstart', startStartDrag);
+      startMarker.addEventListener("mousedown", startStartDrag);
+      startMarker.addEventListener("touchstart", startStartDrag);
     }
-    
+
     if (endMarker) {
-      endMarker.addEventListener('mousedown', startEndDrag);
-      endMarker.addEventListener('touchstart', startEndDrag);
+      endMarker.addEventListener("mousedown", startEndDrag);
+      endMarker.addEventListener("touchstart", startEndDrag);
     }
-    
+
     // Add global event listeners for drag operations
-    document.addEventListener('mousemove', handleMove);
-    document.addEventListener('touchmove', handleMove);
-    document.addEventListener('mouseup', handleEnd);
-    document.addEventListener('touchend', handleEnd);
-    
+    document.addEventListener("mousemove", handleMove);
+    document.addEventListener("touchmove", handleMove);
+    document.addEventListener("mouseup", handleEnd);
+    document.addEventListener("touchend", handleEnd);
+
     // Cleanup
     return () => {
       if (startMarker) {
-        startMarker.removeEventListener('mousedown', startStartDrag);
-        startMarker.removeEventListener('touchstart', startStartDrag);
+        startMarker.removeEventListener("mousedown", startStartDrag);
+        startMarker.removeEventListener("touchstart", startStartDrag);
       }
-      
+
       if (endMarker) {
-        endMarker.removeEventListener('mousedown', startEndDrag);
-        endMarker.removeEventListener('touchstart', startEndDrag);
+        endMarker.removeEventListener("mousedown", startEndDrag);
+        endMarker.removeEventListener("touchstart", startEndDrag);
       }
-      
-      document.removeEventListener('mousemove', handleMove);
-      document.removeEventListener('touchmove', handleMove);
-      document.removeEventListener('mouseup', handleEnd);
-      document.removeEventListener('touchend', handleEnd);
+
+      document.removeEventListener("mousemove", handleMove);
+      document.removeEventListener("touchmove", handleMove);
+      document.removeEventListener("mouseup", handleEnd);
+      document.removeEventListener("touchend", handleEnd);
     };
   }, [videoDuration, startTime, endTime, onStartTimeChange, onEndTimeChange]);
 
   return (
     <div className="space-y-6">
       <div className="glass-card p-6 md:p-8">
-        <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-6">Adjust clip timing</h3>
-        
+        <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-6">
+          Adjust clip timing
+        </h3>
+
         {/* Timeline with visual markers */}
         <div className="timeline-container mb-6">
-            <div className="timeline-track" ref={trackRef}>
-              {/* Selected Area */}
-              <div 
-                className="absolute h-2 bg-primary rounded-full" 
-                style={{ 
-                  left: `${startPosition}%`, 
-                  right: `${100 - endPosition}%` 
-                }}
-              ></div>
-              
-              {/* Start Marker */}
-              <div 
-                ref={startMarkerRef}
-                className="timeline-marker"
-                style={{ left: `${startPosition}%` }}
-              >
-                {/* Small tooltip showing time */}
-                <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-primary text-white text-xs rounded px-1.5 py-0.5 whitespace-nowrap">
-                  {formatTime(startTime)}
-                </div>
-              </div>
-              
-              {/* End Marker */}
-              <div 
-                ref={endMarkerRef}
-                className="timeline-marker"
-                style={{ left: `${endPosition}%` }}
-              >
-                {/* Small tooltip showing time */}
-                <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-primary text-white text-xs rounded px-1.5 py-0.5 whitespace-nowrap">
-                  {formatTime(endTime)}
-                </div>
+          <div className="timeline-track" ref={trackRef}>
+            {/* Selected Area */}
+            <div
+              className="absolute h-2 bg-primary rounded-full"
+              style={{
+                left: `${startPosition}%`,
+                right: `${100 - endPosition}%`,
+              }}
+            ></div>
+
+            {/* Start Marker */}
+            <div
+              ref={startMarkerRef}
+              className="timeline-marker"
+              style={{ left: `${startPosition}%` }}
+            >
+              {/* Small tooltip showing time */}
+              <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-primary text-white text-xs rounded px-1.5 py-0.5 whitespace-nowrap">
+                {formatTime(startTime)}
               </div>
             </div>
-            
-            {/* Time Indicators */}
-            <div className="absolute bottom-1 left-2 right-2 flex justify-between text-xs text-gray-500">
-              {timeIndicators}
-            </div>
-          </div>
-          
-          {/* Precise Time Controls */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-            <div>
-              <Label htmlFor="start-time" className="block text-sm font-medium text-gray-700 mb-1.5 control-label">
-                Start Time
-              </Label>
-              <div className="flex rounded-md shadow-sm focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
-                <Input 
-                  id="start-time" 
-                  value={startTimeDisplay}
-                  onChange={handleStartTimeInputChange}
-                  onBlur={handleStartTimeInputBlur}
-                  className="flex-1 rounded-r-none border-r-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-                  placeholder="0:00"
-                />
-                <Button 
-                  type="button"
-                  variant="outline"
-                  className="rounded-l-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                  onClick={() => onStartTimeChange(0)}
-                  title="Reset to beginning"
-                >
-                  <SkipBack className="h-3.5 w-3.5" />
-                </Button>
-              </div>
-            </div>
-            
-            <div>
-              <Label htmlFor="end-time" className="block text-sm font-medium text-gray-700 mb-1.5 control-label">
-                End Time
-              </Label>
-              <div className="flex rounded-md shadow-sm focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
-                <Input 
-                  id="end-time" 
-                  value={endTimeDisplay}
-                  onChange={handleEndTimeInputChange}
-                  onBlur={handleEndTimeInputBlur}
-                  className="flex-1 rounded-r-none border-r-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-                  placeholder="0:00"
-                />
-                <Button 
-                  type="button"
-                  variant="outline"
-                  className="rounded-l-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                  onClick={() => onEndTimeChange(Math.round(videoDuration))}
-                  title="Reset to end"
-                >
-                  <SkipForward className="h-3.5 w-3.5" />
-                </Button>
+
+            {/* End Marker */}
+            <div
+              ref={endMarkerRef}
+              className="timeline-marker"
+              style={{ left: `${endPosition}%` }}
+            >
+              {/* Small tooltip showing time */}
+              <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-primary text-white text-xs rounded px-1.5 py-0.5 whitespace-nowrap">
+                {formatTime(endTime)}
               </div>
             </div>
           </div>
-          
-          {/* Clip Preview Controls */}
-          <div className="flex flex-wrap justify-center sm:justify-between items-center gap-4">
-            <div className="flex items-center gap-4">
-              <Button 
+
+          {/* Time Indicators */}
+          <div className="absolute bottom-1 left-2 right-2 flex justify-between text-xs text-gray-500">
+            {timeIndicators}
+          </div>
+        </div>
+
+        {/* Precise Time Controls */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+          <div>
+            <Label
+              htmlFor="start-time"
+              className="block text-sm font-medium text-gray-700 mb-1.5 control-label"
+            >
+              Start Time
+            </Label>
+            <div className="flex rounded-md shadow-sm focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+              <Input
+                id="start-time"
+                value={startTimeDisplay}
+                onChange={handleStartTimeInputChange}
+                onBlur={handleStartTimeInputBlur}
+                className="flex-1 rounded-r-none border-r-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                placeholder="0:00"
+              />
+              <Button
+                type="button"
                 variant="outline"
-                size="sm"
-                onClick={onPlayClip}
-                className="flex items-center text-gray-700 px-4"
+                className="rounded-l-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                onClick={() => onStartTimeChange(0)}
+                title="Reset to beginning"
               >
-                <Play className="h-3.5 w-3.5 mr-1.5" />
-                <span className="text-sm">Play Clip</span>
+                <SkipBack className="h-3.5 w-3.5" />
               </Button>
-              
-              <Button 
-                variant="outline"
-                size="sm"
-                onClick={onPreviewClip}
-                className="flex items-center text-gray-700 px-4"
-              >
-                <Play className="h-3.5 w-3.5 mr-1.5" />
-                <span className="text-sm">Preview Clip</span>
-              </Button>
-              
-              <div className="flex items-center space-x-2">
-                <Switch 
-                  id="loop-preview" 
-                  checked={loopClip}
-                  onCheckedChange={onLoopClipChange}
-                />
-                <Label htmlFor="loop-preview" className="text-sm text-gray-700 dark:text-gray-200">
-                  Loop
-                </Label>
-              </div>
             </div>
-            
-            <div className="text-sm text-gray-600 dark:text-gray-300 font-medium">
-              Duration: <span className="text-gray-900 dark:text-gray-100">{formatTime(endTime - startTime)}</span>
+          </div>
+
+          <div>
+            <Label
+              htmlFor="end-time"
+              className="block text-sm font-medium text-gray-700 mb-1.5 control-label"
+            >
+              End Time
+            </Label>
+            <div className="flex rounded-md shadow-sm focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+              <Input
+                id="end-time"
+                value={endTimeDisplay}
+                onChange={handleEndTimeInputChange}
+                onBlur={handleEndTimeInputBlur}
+                className="flex-1 rounded-r-none border-r-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                placeholder="0:00"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                className="rounded-l-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                onClick={() => onEndTimeChange(Math.round(videoDuration))}
+                title="Reset to end"
+              >
+                <SkipForward className="h-3.5 w-3.5" />
+              </Button>
             </div>
           </div>
         </div>
-      
+
+        {/* Clip Preview Controls */}
+        <div className="flex flex-wrap justify-center sm:justify-between items-center gap-4">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onPlayClip}
+              className="flex items-center text-gray-700 px-4"
+            >
+              <Play className="h-3.5 w-3.5" />
+              <span className="text-sm">Play Clip</span>
+            </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onPreviewClip}
+              className="flex items-center text-gray-700 px-4"
+            >
+              <View className="h-3.5 w-3.5" />
+              <span className="text-sm">Preview Clip</span>
+            </Button>
+
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="loop-preview"
+                checked={loopClip}
+                onCheckedChange={onLoopClipChange}
+              />
+              <Label
+                htmlFor="loop-preview"
+                className="text-sm text-gray-700 dark:text-gray-200"
+              >
+                Loop
+              </Label>
+            </div>
+          </div>
+
+          <div className="text-sm text-gray-600 dark:text-gray-300 font-medium">
+            Duration:{" "}
+            <span className="text-gray-900 dark:text-gray-100">
+              {formatTime(endTime - startTime)}
+            </span>
+          </div>
+        </div>
+      </div>
+
       {/* Advanced Options */}
       <div className="glass-card p-6 md:p-8">
-        <button 
+        <button
           onClick={() => setAdvancedOptionsOpen(!advancedOptionsOpen)}
           className="w-full flex items-center justify-between text-left"
         >
-          <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200">Additional Options</h3>
+          <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200">
+            Additional Options
+          </h3>
           <span className="text-gray-500 dark:text-gray-400">
-            {advancedOptionsOpen ? 
-              <ChevronUp className="h-5 w-5" /> : 
+            {advancedOptionsOpen ? (
+              <ChevronUp className="h-5 w-5" />
+            ) : (
               <ChevronDown className="h-5 w-5" />
-            }
+            )}
           </span>
         </button>
-        
+
         {advancedOptionsOpen && (
           <div className="space-y-6 mt-6 pt-6 border-t border-white/20 dark:border-gray-700/50">
             <div>
-              <Label htmlFor="clip-title" className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-3">
+              <Label
+                htmlFor="clip-title"
+                className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-3"
+              >
                 Clip Title
               </Label>
-              <Input 
-                id="clip-title" 
+              <Input
+                id="clip-title"
                 value={clipTitle}
                 onChange={(e) => onClipTitleChange(e.target.value)}
                 className="w-full glass-input rounded-2xl"
                 placeholder="Add a title to your clip"
               />
             </div>
-            
+
             <div className="flex items-center space-x-3">
-              <Checkbox 
-                id="include-subtitles" 
+              <Checkbox
+                id="include-subtitles"
                 checked={includeSubtitles}
-                onCheckedChange={(checked) => onIncludeSubtitlesChange(checked as boolean)}
+                onCheckedChange={(checked) =>
+                  onIncludeSubtitlesChange(checked as boolean)
+                }
               />
-              <Label htmlFor="include-subtitles" className="text-sm text-gray-700 dark:text-gray-200">
+              <Label
+                htmlFor="include-subtitles"
+                className="text-sm text-gray-700 dark:text-gray-200"
+              >
                 Include subtitles
               </Label>
             </div>
