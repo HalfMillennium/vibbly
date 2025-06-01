@@ -25,10 +25,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/clips/:id", async (req, res) => {
     try {
+      const { userId } = getAuth(req);
+      
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
       const clip = await storage.getClip(parseInt(req.params.id));
       if (!clip) {
         return res.status(404).json({ message: "Clip not found" });
       }
+      
+      // Check if the user owns this clip
+      if (clip.createdByUserId !== userId) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      
       res.json(clip);
     } catch (error) {
       console.error("Error fetching clip:", error);
