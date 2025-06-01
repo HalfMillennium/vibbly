@@ -11,14 +11,14 @@ export default function Landing() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="glass-card p-12 mb-16">
             <h1 className="text-5xl md:text-7xl font-bold gradient-text leading-tight mb-6">
-              Create stunning
+              Create & share
               <br />
-              YouTube clips
+              YouTube clips fast ⚡
             </h1>
 
             <p className="text-xl text-gray-700 dark:text-gray-200 mb-8 max-w-2xl mx-auto font-medium">
               Extract and share the best moments from YouTube videos with
-              precision timing controls and seamless sharing.
+              precision timing controls and seamless sharing 🎬✨
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -29,7 +29,7 @@ export default function Landing() {
               >
                 <Link to="/create">
                   <Play className="h-5 w-5 mr-2" />
-                  Start creating clips
+                  Start creating clips 🚀
                 </Link>
               </Button>
             </div>
@@ -42,7 +42,7 @@ export default function Landing() {
                 <Video className="h-8 w-8 text-primary" />
               </div>
               <h3 className="font-bold text-gray-900 dark:text-white mb-3 text-lg">
-                Precise Timing
+                Precise Timing ⏰
               </h3>
               <p className="text-gray-700 dark:text-gray-200">
                 Set exact start and end times with intuitive timeline controls
@@ -54,7 +54,7 @@ export default function Landing() {
                 <Play className="h-8 w-8 text-primary" />
               </div>
               <h3 className="font-bold text-gray-900 dark:text-white mb-3 text-lg">
-                Instant Preview
+                Instant Preview 👀
               </h3>
               <p className="text-gray-700 dark:text-gray-200">
                 Preview your clips before creating to ensure perfect timing
@@ -70,7 +70,7 @@ export default function Landing() {
                 </div>
               </div>
               <h3 className="font-bold text-gray-900 dark:text-white mb-3 text-lg">
-                Easy Sharing
+                Easy Sharing 🔗
               </h3>
               <p className="text-gray-700 dark:text-gray-200">
                 Generate shareable links for your clips instantly
