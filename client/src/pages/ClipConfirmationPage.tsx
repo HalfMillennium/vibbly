@@ -1,5 +1,5 @@
 import { useLocation, Link } from "wouter";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ExternalLink, Share2, CheckCircle, Copy } from "lucide-react";
@@ -12,13 +12,13 @@ export default function ClipConfirmationPage() {
   const [location] = useLocation();
   const [shareId, setShareId] = useState<string | null>(null);
   const confettiRef = useRef<HTMLCanvasElement>(null);
-
+  const searchParams = useMemo(
+    () => new URLSearchParams(window.location.search),
+    [location],
+  );
   // Extract share ID from URL parameters
   useEffect(() => {
-    const urlParams = new URLSearchParams(location.split("?")[1] || "");
-    const id = urlParams.get("shareId");
-    setShareId(id);
-    console.log("fullLocation", location);
+    setShareId(searchParams.get("shareId"));
   }, [location]);
 
   // Trigger confetti animation when shareId is available

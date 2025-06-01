@@ -7,8 +7,8 @@ export default function Landing() {
   return (
     <LandingPageLayout>
       {/* Hero Section */}
-      <section className="py-20 md:py-32">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <section className="py-10 md:py-14">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="glass-card p-12 mb-16">
             <h1 className="text-5xl md:text-7xl font-bold gradient-text leading-tight mb-6">
               Create & share
