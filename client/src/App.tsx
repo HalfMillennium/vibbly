@@ -9,6 +9,7 @@ import CreatePage from "@/pages/CreateClipPage";
 import LandingPage from "@/pages/LandingPage";
 import MyClipsPage from "@/pages/MyClipsPage";
 import ClipConfirmationPage from "@/pages/ClipConfirmationPage";
+import ViewClipPage from "@/pages/ViewClipPage";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { SignIn, useUser } from "@clerk/clerk-react";
 
