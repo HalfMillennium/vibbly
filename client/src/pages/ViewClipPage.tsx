@@ -42,59 +42,93 @@ export default function ViewClipPage() {
     enabled: !!shareId,
   });
 
-  const { player, loadVideo, getCurrentTime: getPlayerCurrentTime } = useYouTubePlayer(containerRef);
+  const { 
+    player, 
+    loadVideo, 
+    play,
+    pause,
+    seekTo,
+    getCurrentTime: getPlayerCurrentTime 
+  } = useYouTubePlayer(containerRef);
 
   // Load video when clip data is available
   useEffect(() => {
     if (clip && loadVideo) {
       loadVideo(clip.videoId, () => {
-        if (player) {
-          player.seekTo(clip.startTime);
-          setCurrentTime(clip.startTime);
-        }
+        // Use a small delay to ensure player is ready
+        setTimeout(() => {
+          if (player) {
+            player.seekTo(clip.startTime);
+            setCurrentTime(clip.startTime);
+          }
+        }, 500);
       });
     }
-  }, [clip, loadVideo, player]);
+  }, [clip, loadVideo]);
 
+  // Monitor player state changes
+  useEffect(() => {
+    if (!player) return;
+
+    const checkPlayerState = () => {
+      try {
+        const time = getPlayerCurrentTime();
+        if (time !== currentTime) {
+          setCurrentTime(time);
+        }
+      } catch (error) {
+        // Player might not be ready yet
+      }
+    };
+
+    const interval = setInterval(checkPlayerState, 100);
+    return () => clearInterval(interval);
+  }, [player, getPlayerCurrentTime]);
+
+  // Handle clip boundary checking
   useEffect(() => {
     if (!player || !clip) return;
 
-    const checkTime = () => {
-      const time = getPlayerCurrentTime();
-      setCurrentTime(time);
+    const checkClipBounds = () => {
+      const time = currentTime;
       
       if (time >= clip.endTime) {
         if (loopEnabled) {
-          player.seekTo(clip.startTime);
+          seekTo(clip.startTime);
+          setCurrentTime(clip.startTime);
         } else {
-          player.pauseVideo();
+          pause();
           setIsPlaying(false);
         }
       }
     };
 
-    const interval = setInterval(checkTime, 100);
+    const interval = setInterval(checkClipBounds, 100);
     return () => clearInterval(interval);
-  }, [player, clip, loopEnabled, getPlayerCurrentTime]);
+  }, [player, clip, loopEnabled, currentTime, seekTo, pause]);
 
   const handlePlayPause = () => {
     if (!player || !clip) return;
 
     if (isPlaying) {
-      player.pauseVideo();
+      pause();
+      setIsPlaying(false);
     } else {
       // If we're at or past the end, restart from beginning
-      if (currentTime >= clip.endTime) {
-        player.seekTo(clip.startTime);
+      if (currentTime >= clip.endTime || currentTime < clip.startTime) {
+        seekTo(clip.startTime);
+        setCurrentTime(clip.startTime);
       }
-      player.playVideo();
+      play();
+      setIsPlaying(true);
     }
   };
 
   const handleRestart = () => {
-    if (!player || !clip) return;
-    player.seekTo(clip.startTime);
+    if (!clip) return;
+    seekTo(clip.startTime);
     setCurrentTime(clip.startTime);
+    setIsPlaying(false);
   };
 
   const openOriginalVideo = () => {
