@@ -65,14 +65,52 @@ export default function AppHeader() {
                 appearance={{
                   elements: {
                     avatarBox: "w-8 h-8",
-                    userButtonPopoverCard: "bg-background border shadow-lg",
-                    userButtonPopoverActions: "bg-background"
+                    userButtonPopoverCard: "bg-background border shadow-lg dark:bg-gray-800 dark:border-gray-700",
+                    userButtonPopoverActions: "bg-background dark:bg-gray-800",
+                    userButtonPopoverActionButton: "text-foreground hover:bg-muted dark:text-gray-200 dark:hover:bg-gray-700",
+                    userButtonPopoverActionButtonText: "text-foreground dark:text-gray-200",
+                    userButtonPopoverActionButtonIcon: "text-foreground dark:text-gray-200"
+                  },
+                  variables: {
+                    colorPrimary: "hsl(var(--primary))",
+                    colorBackground: "hsl(var(--background))",
+                    colorText: "hsl(var(--foreground))",
+                    colorTextSecondary: "hsl(var(--muted-foreground))",
+                    colorInputBackground: "hsl(var(--input))",
+                    colorInputText: "hsl(var(--foreground))",
+                    borderRadius: "0.5rem"
                   }
                 }}
                 showName={false}
               />
             ) : (
-              <SignInButton mode="modal">
+              <SignInButton 
+                mode="modal"
+                appearance={{
+                  elements: {
+                    modalContent: "bg-background dark:bg-gray-800",
+                    card: "bg-background dark:bg-gray-800 border dark:border-gray-700",
+                    headerTitle: "text-foreground dark:text-gray-200",
+                    headerSubtitle: "text-muted-foreground dark:text-gray-400",
+                    socialButtonsBlockButton: "border dark:border-gray-600 text-foreground dark:text-gray-200 hover:bg-muted dark:hover:bg-gray-700",
+                    dividerLine: "bg-border dark:bg-gray-600",
+                    dividerText: "text-muted-foreground dark:text-gray-400",
+                    formFieldInput: "bg-input dark:bg-gray-700 border dark:border-gray-600 text-foreground dark:text-gray-200",
+                    formFieldLabel: "text-foreground dark:text-gray-200",
+                    identityPreviewText: "text-foreground dark:text-gray-200",
+                    formButtonPrimary: "bg-primary text-primary-foreground hover:bg-primary/90"
+                  },
+                  variables: {
+                    colorPrimary: "hsl(var(--primary))",
+                    colorBackground: "hsl(var(--background))",
+                    colorText: "hsl(var(--foreground))",
+                    colorTextSecondary: "hsl(var(--muted-foreground))",
+                    colorInputBackground: "hsl(var(--input))",
+                    colorInputText: "hsl(var(--foreground))",
+                    borderRadius: "0.5rem"
+                  }
+                }}
+              >
                 <Button
                   variant="outline"
                   size="sm"
