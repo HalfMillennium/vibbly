@@ -6,7 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { formatTime, parseTimeInput } from "@/lib/utils";
-import { StepBack, StepForward, Play, ChevronDown, ChevronUp, Scissors } from "lucide-react";
+import { StepBack, StepForward, Play, ChevronDown, ChevronUp, Scissors, SkipBack, SkipForward } from "lucide-react";
 
 interface ClipControlsProps {
   videoDuration: number;
@@ -270,8 +270,9 @@ export default function ClipControls({
                   variant="outline"
                   className="rounded-l-none focus-visible:ring-0 focus-visible:ring-offset-0"
                   onClick={() => onStartTimeChange(0)}
+                  title="Reset to beginning"
                 >
-                  <Scissors className="h-3.5 w-3.5" />
+                  <SkipBack className="h-3.5 w-3.5" />
                 </Button>
               </div>
             </div>
@@ -294,8 +295,9 @@ export default function ClipControls({
                   variant="outline"
                   className="rounded-l-none focus-visible:ring-0 focus-visible:ring-offset-0"
                   onClick={() => onEndTimeChange(videoDuration)}
+                  title="Reset to end"
                 >
-                  <Scissors className="h-3.5 w-3.5" />
+                  <SkipForward className="h-3.5 w-3.5" />
                 </Button>
               </div>
             </div>
