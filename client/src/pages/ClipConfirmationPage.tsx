@@ -30,6 +30,9 @@ export default function ClipConfirmationPage() {
   useEffect(() => {
     const urlParams = new URLSearchParams(location.split('?')[1] || '');
     const id = urlParams.get('shareId');
+    console.log('URL location:', location);
+    console.log('URL params:', urlParams.toString());
+    console.log('Share ID extracted:', id);
     setShareId(id);
   }, [location]);
 
