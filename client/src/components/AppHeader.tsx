@@ -32,22 +32,28 @@ export default function AppHeader() {
             {isSignedIn && (
               <>
                 <Button
+                  asChild
                   variant="ghost"
                   size="sm"
                   className="text-gray-600 dark:text-gray-300 hover:text-primary hover:bg-white/20 dark:hover:bg-white/10 rounded-2xl hidden sm:flex items-center gap-1.5 glass-button"
                   title="View Saved Clips"
                 >
-                  <Bookmark className="h-4 w-4" />
-                  <span className="text-sm">My Clips</span>
+                  <Link to="/my-clips">
+                    <Bookmark className="h-4 w-4" />
+                    <span className="text-sm">My Clips</span>
+                  </Link>
                 </Button>
 
                 <Button
+                  asChild
                   variant="ghost"
                   size="icon"
                   className="text-gray-600 dark:text-gray-300 hover:text-primary hover:bg-white/20 dark:hover:bg-white/10 rounded-2xl sm:hidden glass-button"
                   title="View Saved Clips"
                 >
-                  <Bookmark className="h-4 w-4" />
+                  <Link to="/my-clips">
+                    <Bookmark className="h-4 w-4" />
+                  </Link>
                 </Button>
               </>
             )}
