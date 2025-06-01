@@ -127,6 +127,16 @@ export default function CreateClipPage() {
     }
   };
 
+  // Function to play the clip in the main video player
+  const handlePlayClip = () => {
+    if (seekTo) {
+      seekTo(startTime);
+      if (play) {
+        play();
+      }
+    }
+  };
+
   return (
     <CreatePageLayout>
         <VideoInputForm onSubmit={handleUrlSubmit} />

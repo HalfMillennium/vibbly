@@ -6,7 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { formatTime, parseTimeInput } from "@/lib/utils";
-import { StepBack, StepForward, Play, ChevronDown, ChevronUp, Scissors, SkipBack, SkipForward } from "lucide-react";
+import { StepBack, StepForward, Play, ChevronDown, ChevronUp, Scissors, SkipBack, SkipForward, Eye } from "lucide-react";
 
 interface ClipControlsProps {
   videoDuration: number;
@@ -21,6 +21,7 @@ interface ClipControlsProps {
   loopClip: boolean;
   onLoopClipChange: (loop: boolean) => void;
   onPreviewClip: () => void;
+  onPlayClip: () => void;
 }
 
 export default function ClipControls({
@@ -36,6 +37,7 @@ export default function ClipControls({
   loopClip,
   onLoopClipChange,
   onPreviewClip,
+  onPlayClip,
 }: ClipControlsProps) {
   const [startTimeDisplay, setStartTimeDisplay] = useState(formatTime(startTime));
   const [endTimeDisplay, setEndTimeDisplay] = useState(formatTime(endTime || videoDuration));
@@ -306,6 +308,16 @@ export default function ClipControls({
           {/* Clip Preview Controls */}
           <div className="flex flex-wrap justify-center sm:justify-between items-center gap-4">
             <div className="flex items-center gap-4">
+              <Button 
+                variant="outline"
+                size="sm"
+                onClick={onPlayClip}
+                className="flex items-center text-gray-700 px-4"
+              >
+                <Play className="h-3.5 w-3.5 mr-1.5" />
+                <span className="text-sm">Play Clip</span>
+              </Button>
+              
               <Button 
                 variant="outline"
                 size="sm"
