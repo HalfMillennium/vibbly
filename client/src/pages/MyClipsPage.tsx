@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Play, Clock, Share2, ExternalLink } from "lucide-react";
-import { formatTime } from "@/lib/utils";
+import { formatTime, formatDate } from "@/lib/utils";
 import CreatePageLayout from "@/components/layouts/CreatePage";
 
 interface Clip {
@@ -96,10 +96,6 @@ export default function MyClipsPage() {
                       <Clock className="h-3 w-3 mr-1" />
                       {formatTime(clip.endTime - clip.startTime)}
                     </Badge>
-                    <Badge variant="secondary" className="text-xs">
-                      <Clock className="h-3 w-3 mr-1" />
-                      {formatTime(clip.endTime - clip.startTime)}
-                    </Badge>
                   </div>
                 </div>
 
@@ -110,6 +106,8 @@ export default function MyClipsPage() {
                     </h3>
 
                     <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-3">
+                      <span>{formatDate(clip.createdAt)}</span>
+                      <span>{"•"}</span>
                       <span>
                         {formatTime(clip.startTime)} -{" "}
                         {formatTime(clip.endTime)}
