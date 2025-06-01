@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useLocation } from "wouter";
 import CreatePageLayout from "@/components/layouts/CreatePage";
 import VideoInputForm from "@/components/VideoInputForm";
@@ -30,7 +30,12 @@ export default function CreateClipPage() {
   const videoPlayerRef = useRef<HTMLDivElement>(null);
 
   // YouTube player functions
-  const { seekTo, play } = useYouTubePlayer(videoPlayerRef);
+  const {
+    seekTo,
+    play,
+    player,
+    getCurrentTime: getPlayerCurrentTime,
+  } = useYouTubePlayer(videoPlayerRef);
 
   const handleUrlSubmit = (url: string) => {
     // Extract video ID from YouTube URL
@@ -55,6 +60,25 @@ export default function CreateClipPage() {
       });
     }
   };
+
+  // Monitor player state changes
+  useEffect(() => {
+    if (!player) return;
+
+    const checkPlayerState = () => {
+      try {
+        const time = getPlayerCurrentTime();
+        if (time !== currentTime) {
+          setCurrentTime(time);
+        }
+      } catch (error) {
+        // Player might not be ready yet
+      }
+    };
+
+    const interval = setInterval(checkPlayerState, 100);
+    return () => clearInterval(interval);
+  }, [player, getPlayerCurrentTime]);
 
   const handleCreateClip = async () => {
     if (!videoId || startTime >= endTime) {
@@ -129,77 +153,80 @@ export default function CreateClipPage() {
 
   // Function to play the clip in the main video player
   const handlePlayClip = () => {
-    if (seekTo) {
+    if (seekTo && startTime >= 0) {
       seekTo(startTime);
-      if (play) {
-        play();
-      }
+      // Give the player a moment to seek, then start playing
+      setTimeout(() => {
+        if (play) {
+          play();
+        }
+      }, 100);
     }
   };
 
   return (
     <CreatePageLayout>
-        <VideoInputForm onSubmit={handleUrlSubmit} />
+      <VideoInputForm onSubmit={handleUrlSubmit} />
 
-        {videoId && (
-          <div className="space-y-6 sm:space-y-8">
-            <div ref={videoPlayerRef}>
-              <VideoPlayer
-                videoId={videoId}
+      {videoId && (
+        <div className="space-y-6 sm:space-y-8">
+          <div ref={videoPlayerRef}>
+            <VideoPlayer
+              videoId={videoId}
+              startTime={startTime}
+              endTime={endTime}
+              loopClip={loopClip}
+              onVideoTitleChange={setVideoTitle}
+              onVideoDurationChange={setVideoDuration}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+            <div className="md:col-span-2 order-2 md:order-1">
+              <ClipControls
+                videoDuration={videoDuration}
                 startTime={startTime}
                 endTime={endTime}
+                onStartTimeChange={setStartTime}
+                onEndTimeChange={setEndTime}
+                clipTitle={clipTitle}
+                onClipTitleChange={setClipTitle}
+                includeSubtitles={includeSubtitles}
+                onIncludeSubtitlesChange={setIncludeSubtitles}
                 loopClip={loopClip}
-                onVideoTitleChange={setVideoTitle}
-                onVideoDurationChange={setVideoDuration}
+                onLoopClipChange={setLoopClip}
+                onPreviewClip={handlePreviewClip}
+                onPlayClip={handlePlayClip}
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-              <div className="md:col-span-2 order-2 md:order-1">
-                <ClipControls
-                  videoDuration={videoDuration}
-                  startTime={startTime}
-                  endTime={endTime}
-                  onStartTimeChange={setStartTime}
-                  onEndTimeChange={setEndTime}
-                  clipTitle={clipTitle}
-                  onClipTitleChange={setClipTitle}
-                  includeSubtitles={includeSubtitles}
-                  onIncludeSubtitlesChange={setIncludeSubtitles}
-                  loopClip={loopClip}
-                  onLoopClipChange={setLoopClip}
-                  onPreviewClip={handlePreviewClip}
-                  onPlayClip={handlePlayClip}
-                />
-              </div>
-
-              <div className="order-1 md:order-2">
-                <ClipInfo
-                  videoTitle={videoTitle}
-                  startTime={startTime}
-                  endTime={endTime}
-                  onCreateClip={handleCreateClip}
-                  clipCreated={clipCreated}
-                  isCreating={isCreating}
-                  onCopyLink={handleCopyLink}
-                />
-              </div>
+            <div className="order-1 md:order-2">
+              <ClipInfo
+                videoTitle={videoTitle}
+                startTime={startTime}
+                endTime={endTime}
+                onCreateClip={handleCreateClip}
+                clipCreated={clipCreated}
+                isCreating={isCreating}
+                onCopyLink={handleCopyLink}
+              />
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Clip Preview Modal */}
-        {videoId && (
-          <ClipPreviewModal
-            isOpen={isPreviewModalOpen}
-            onClose={() => setIsPreviewModalOpen(false)}
-            videoId={videoId}
-            startTime={startTime}
-            endTime={endTime}
-            clipTitle={clipTitle || videoTitle}
-            loopClip={loopClip}
-          />
-        )}
+      {/* Clip Preview Modal */}
+      {videoId && (
+        <ClipPreviewModal
+          isOpen={isPreviewModalOpen}
+          onClose={() => setIsPreviewModalOpen(false)}
+          videoId={videoId}
+          startTime={startTime}
+          endTime={endTime}
+          clipTitle={clipTitle || videoTitle}
+          loopClip={loopClip}
+        />
+      )}
     </CreatePageLayout>
   );
 }
