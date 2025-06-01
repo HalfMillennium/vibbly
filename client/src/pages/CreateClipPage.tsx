@@ -93,6 +93,7 @@ export default function CreateClipPage() {
 
       if (response.ok) {
         const data = await response.json();
+        console.log("Clip creation response:", data);
         // Redirect to confirmation page with share ID
         setLocation(`/clip-created?shareId=${data.shareId}`);
       } else {
