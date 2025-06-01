@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
-import { useLocation, Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
+import { useLocation, Link } from "wouter";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Share2, ExternalLink, Copy, Play } from "lucide-react";
-import { formatTime } from "@/lib/utils";
+import { Card, CardContent } from "@/components/ui/card";
+import { Clock, ExternalLink, Share2, Play, CheckCircle } from "lucide-react";
+import { formatTime, formatDate } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import CreatePageLayout from "@/components/layouts/CreatePage";
 
@@ -30,13 +30,10 @@ export default function ClipConfirmationPage() {
   useEffect(() => {
     const urlParams = new URLSearchParams(location.split('?')[1] || '');
     const id = urlParams.get('shareId');
-    console.log('URL location:', location);
-    console.log('URL params:', urlParams.toString());
-    console.log('Share ID extracted:', id);
     setShareId(id);
   }, [location]);
 
-  const { data: clip, isLoading } = useQuery<Clip>({
+  const { data: clip, isLoading, error } = useQuery<Clip>({
     queryKey: [`/api/clips/share/${shareId}`],
     enabled: !!shareId,
   });
@@ -64,8 +61,8 @@ export default function ClipConfirmationPage() {
         <div className="max-w-2xl mx-auto px-4 py-8">
           <div className="glass-card p-8 text-center">
             <div className="animate-pulse">
-              <div className="h-6 bg-gray-200 rounded mb-4"></div>
-              <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto"></div>
+              <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded mb-4"></div>
+              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mx-auto"></div>
             </div>
           </div>
         </div>
@@ -73,7 +70,7 @@ export default function ClipConfirmationPage() {
     );
   }
 
-  if (!clip) {
+  if (error || !clip) {
     return (
       <CreatePageLayout>
         <div className="max-w-2xl mx-auto px-4 py-8">
@@ -93,94 +90,130 @@ export default function ClipConfirmationPage() {
     );
   }
 
+  const clipDuration = clip.endTime - clip.startTime;
+
   return (
     <CreatePageLayout>
-      <div className="max-w-2xl mx-auto px-4 py-8 space-y-6">
+      <div className="max-w-3xl mx-auto px-4 py-8 space-y-8">
         {/* Success Header */}
-        <div className="glass-card p-8 text-center">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckCircle className="h-8 w-8 text-green-600" />
+        <div className="text-center space-y-4">
+          <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto">
+            <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
             Clip Created Successfully!
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Your video clip has been created and is ready to share
+            Your clip is ready to share with the world
           </p>
         </div>
 
-        {/* Clip Details */}
-        <Card className="glass-card">
-          <div className="relative aspect-video overflow-hidden rounded-t-lg">
+        {/* Clip Details Card */}
+        <Card className="glass-card overflow-hidden">
+          <div className="relative aspect-video">
             <img
               src={`https://img.youtube.com/vi/${clip.videoId}/maxresdefault.jpg`}
               alt={clip.clipTitle}
               className="w-full h-full object-cover"
             />
-            <div className="absolute bottom-2 right-2">
-              <Badge variant="secondary" className="text-xs">
-                {formatTime(clip.endTime - clip.startTime)}
+            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+              <Link href={`/view/${clip.shareId}`}>
+                <Button
+                  size="lg"
+                  className="bg-white/90 hover:bg-white text-black rounded-full px-6"
+                >
+                  <Play className="w-5 h-5 mr-2" />
+                  Watch Clip
+                </Button>
+              </Link>
+            </div>
+            <div className="absolute bottom-4 right-4">
+              <Badge variant="secondary" className="bg-black/70 text-white">
+                <Clock className="w-3 h-3 mr-1" />
+                {formatTime(clipDuration)}
               </Badge>
             </div>
           </div>
-          
-          <CardContent className="p-6">
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-2 text-lg">
-              {clip.clipTitle}
-            </h3>
-            
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-              From: {clip.videoTitle}
-            </p>
-            
-            <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mb-6">
-              <span>{formatTime(clip.startTime)} - {formatTime(clip.endTime)}</span>
-              {clip.includeSubtitles && (
-                <Badge variant="outline" className="text-xs">CC</Badge>
-              )}
+
+          <CardContent className="p-6 space-y-4">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                {clip.clipTitle}
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">
+                from "{clip.videoTitle}"
+              </p>
             </div>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <Button 
-                variant="outline" 
+
+            <div className="grid grid-cols-3 gap-4 text-center py-4 border-t border-gray-200 dark:border-gray-700">
+              <div className="space-y-1">
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  Duration
+                </div>
+                <div className="font-semibold text-gray-900 dark:text-gray-100">
+                  {formatTime(clipDuration)}
+                </div>
+              </div>
+              
+              <div className="space-y-1">
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  Start Time
+                </div>
+                <div className="font-semibold text-gray-900 dark:text-gray-100">
+                  {formatTime(clip.startTime)}
+                </div>
+              </div>
+              
+              <div className="space-y-1">
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  End Time
+                </div>
+                <div className="font-semibold text-gray-900 dark:text-gray-100">
+                  {formatTime(clip.endTime)}
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 pt-4">
+              <Button
                 onClick={handleCopyLink}
-                className="flex items-center gap-2"
+                className="flex-1"
+                variant="outline"
               >
-                <Copy className="h-4 w-4" />
-                Copy Link
+                <Share2 className="w-4 h-4 mr-2" />
+                Copy Share Link
               </Button>
               
-              <Button 
-                variant="outline" 
+              <Button
                 onClick={handleWatchOriginal}
-                className="flex items-center gap-2"
+                className="flex-1"
+                variant="outline"
               >
-                <ExternalLink className="h-4 w-4" />
+                <ExternalLink className="w-4 h-4 mr-2" />
                 Watch Original
               </Button>
-              
-              <Button 
-                asChild
-                className="flex items-center gap-2"
-              >
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button asChild className="flex-1" variant="default">
                 <Link to="/my-clips">
-                  <Play className="h-4 w-4" />
-                  View All Clips
+                  View My Clips
+                </Link>
+              </Button>
+              
+              <Button asChild className="flex-1" variant="outline">
+                <Link to="/create">
+                  Create Another Clip
                 </Link>
               </Button>
             </div>
           </CardContent>
         </Card>
 
-        {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button asChild variant="outline" size="lg">
-            <Link to="/create">Create Another Clip</Link>
-          </Button>
-          
-          <Button asChild size="lg">
-            <Link to="/my-clips">Go to My Clips</Link>
-          </Button>
+        {/* Created Date */}
+        <div className="text-center text-sm text-gray-500 dark:text-gray-400">
+          Created on {formatDate(clip.createdAt)}
         </div>
       </div>
     </CreatePageLayout>
